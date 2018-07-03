@@ -1,0 +1,28 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <link rel="shortcut icon" href="{% static 'image/favicon.ico' %}" type="image/x-ico">
+</head>
+<body>
+<div align="center">
+    <form method="post" action="{% url 'users:register' %}">
+        用户名：<input type="text" name="username">(必填)<br>
+        密码：<input type="text" name="password">(必填)<br>
+        邮箱：<input type="text" name="email">(选填)<br>
+        <input type="submit" value="注册">
+        {% if result != None %}
+            {% if result == '注册成功' %}
+                <p>green {{ result }}</p>
+            {% else %}
+                <p>red {{ result }}</p>
+            {% endif %}
+        {% endif %}
+        <p></p>
+        {% csrf_token %}
+    </form>
+</div>
+</body>
+</html>

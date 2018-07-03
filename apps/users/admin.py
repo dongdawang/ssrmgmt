@@ -4,9 +4,9 @@ from .models import UserProfile, EmailVerifyRecord
 
 
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ['nick_name', 'birthday', 'gender', 'address', 'mobile', 'date_joined']
+    list_display = ['username', 'nick_name', 'birthday', 'gender', 'address', 'mobile', 'date_joined']
     ordering = ['date_joined']
-    list_filter = ['nick_name', 'birthday', 'gender', 'address', 'mobile', 'date_joined']
+    list_filter = ['username', 'nick_name', 'birthday', 'gender', 'address', 'mobile', 'date_joined']
 
 
 class EmailVerifyRecordAdmin(admin.ModelAdmin):

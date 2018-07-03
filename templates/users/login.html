@@ -4,14 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
-    <link rel="shortcut icon" href="{% static 'image/plane.png' %}" type="image/x-icon">
+    <link rel="shortcut icon" href="{% static 'image/favicon.ico' %}" type="image/x-ico">
 </head>
 <body>
-    <form method="post" action="login">
+<div>
+    <form method="post" action="{% url 'users:login' %}">
         UserName:<input type="text" value="" name="username"><br>
         PassWord:<input type="text" value="" name="password"><br>
         <input type="submit" value="提价">
         {% csrf_token %}
+        {% if result != None %}
+            <p>red{{ result }}</p>
+        {% endif %}
     </form>
+</div>
 </body>
 </html>

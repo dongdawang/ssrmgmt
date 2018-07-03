@@ -15,14 +15,32 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+# from django.views.static import serve
+from django.conf.urls.static import static
+from django.conf import settings
 
-from users.views import Index
+from users.views import (Index, Login, Register, Profile, ProfilePhotoUpload,
+                         ModifyPwd, ModifyEmail, SendEmailCode)
 from goods.views import Ping
+# from ssrmgmt.settings import MEDIA_ROOT
 
+users_url = [
+    path('login/', Login.as_view(), name='login'),
+    path('register/', Register.as_view(), name='register'),
+    path('profile/', Profile.as_view(), name='profile'),
+    path('profile/profile-photo', ProfilePhotoUpload.as_view(), name='profile-photo'),
+    path('profile/modify-pwd', ModifyPwd.as_view(), name='modify-pwd'),
+    path('profile/modify-email', ModifyEmail.as_view(), name='modify-email'),
+    path('profile/send-mail', SendEmailCode.as_view(), name='send_mail'),
+]
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', Index.as_view(), name='index'),
     path('ping', Ping.as_view(), name='ping'),
-    path('users/', include('users.urls'), name='users')
-]
+    # 创建一个命名空间，可以有效的对url进行分类
+    path('users/', include((users_url, "users")), name='users'),
+    # path('media/<str>', serve, {"document_root": MEDIA_ROOT})
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+

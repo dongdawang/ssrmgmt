@@ -8,8 +8,8 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-{#    <link rel="icon" href="../static/image/plane.png">#}
-    <link rel="icon" href="{% static 'image/plane.png' %}">
+{#    <link rel="icon" href="../static/image/default.png">#}
+    <link rel="shortcut icon" href="{% static 'image/favicon.ico' %}" type="image/x-ico">
 
     <title>SSR</title>
 
@@ -69,8 +69,8 @@
                 </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="{% static 'navbar/' %}">Default</a></li>
-                <li><a href="{% static 'navbar-static-top/' %}">Static top</a></li>
+                <li><a href="{% url 'users:profile' %}">{{ request.user.username }}</a></li>
+                <li><a href="{% static '' %}">Static top</a></li>
                 <li class="active"><a href="./">Fixed top <span class="sr-only">(current)</span></a></li>
             </ul>
         </div><!--/.nav-collapse -->
