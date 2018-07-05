@@ -1,3 +1,5 @@
+import functools
+
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from django.views import View
@@ -5,7 +7,7 @@ from django.contrib.auth.hashers import make_password
 
 from goods.models import SsrServer
 from .forms import UploadProfilePhoto, ModifyPwdForm
-from .models import UserProfile, EmailVerifyRecord
+from .models import UserProfile, EmailVerifyRecord, UserModifyRecord
 from apps.utils.mixin import LoginRequireMixin
 from apps.utils.email_send import send_type_email
 
@@ -75,9 +77,26 @@ class Profile(LoginRequireMixin, View):
         pass
 
 
+def record_modify(modify_type=None):
+    """记录每次修改个人信息的装饰器"""
+    def decorator(func):
+        def wrapper(self, request, *args, **kwargs):
+            modify = UserModifyRecord()
+            modify.user = request.user
+            modify.modify_type = modify_type
+            result = func(self, request, *args, **kwargs)
+            # 需要修改操作完成之后才将修改记录保存
+            modify.save()
+            return result
+        return wrapper
+    return decorator
+
+
 class ProfilePhotoUpload(LoginRequireMixin, View):
     """用户修改头像
     """
+
+    @record_modify("modify_profile_photo")
     def post(self, request):
         profile_photo_form = UploadProfilePhoto(request.POST, request.FILES, instance=request.user)
         if profile_photo_form.is_valid():
@@ -88,6 +107,8 @@ class ProfilePhotoUpload(LoginRequireMixin, View):
 class ModifyPwd(LoginRequireMixin, View):
     """个人中心修改密码
     """
+
+    @record_modify("modify_password")
     def post(self, request):
         modify_form = ModifyPwdForm(request.POST)
         # form表单中定义了，必须是符合form表单的才算是有效表单，比如密码长度要大于5
@@ -120,6 +141,8 @@ class SendEmailCode(LoginRequireMixin, View):
 class ModifyEmail(LoginRequireMixin, View):
     """修改个人邮箱
     """
+
+    @record_modify("modify_email")
     def post(self, request):
         email = request.POST.get('email', '')
         code = request.POST.get('code', '')

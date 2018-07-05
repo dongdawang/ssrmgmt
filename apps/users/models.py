@@ -41,3 +41,31 @@ class EmailVerifyRecord(models.Model):
         verbose_name_plural = verbose_name
 
 
+class BandwidthUsageRecord(models.Model):
+    """记录用户在各个时间点的流量使用情况
+    """
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name="用户")
+    bytes_received = models.CharField(max_length=20, null=False, blank=False, verbose_name="收到的数据")
+    bytes_sent = models.CharField(max_length=20, null=False, blank=False, verbose_name="发送的数据")
+    add_time = models.DateTimeField(default=datetime.now, verbose_name="添加时间")
+
+    class Meta:
+        verbose_name = "用户流量使用情况"
+        verbose_name_plural = verbose_name
+
+
+class UserModifyRecord(models.Model):
+    """记录账号信息修改的记录
+    """
+    chics = (
+        ("modify_email", "修改邮箱"),
+        ("modify_password", "修改密码"),
+        ("modify_profile_photo", "修改头像"),
+    )
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name="用户")
+    modify_type = models.CharField(choices=chics, max_length=25, verbose_name="修改类型")
+    add_time = models.DateTimeField(default=datetime.now, verbose_name="添加时间")
+
+    class Meta:
+        verbose_name = "账号修改记录"
+        verbose_name_plural = verbose_name
