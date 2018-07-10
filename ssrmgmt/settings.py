@@ -10,8 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
+from __future__ import absolute_import, unicode_literals
 import os
 import sys
+
+from celery.schedules import crontab
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -139,3 +142,21 @@ EMAIL_HOST_USER = "ssrmgmt@163.com"
 EMAIL_HOST_PASSWORD = "ssrmgmt1233"
 EMAIL_USE_TLS = True
 EMAIL_FROM = "ssrmgmt@163.com"
+
+# celery settings
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/10'
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/9'
+# CELERY_BACKEND_URL = ''
+# Only add pickle to this list if your broker is secured
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_BEAT_SCHEDULE = {
+    'task-one': {
+        'task': 'users.tasks.band_record',
+        'schedule': 5,
+        # 'args': ("xxxxxxxxx",),
+    },
+}
+
+# celery -A ssrmgmt worker -l info -P eventlet
+# celery -A ssrmgmt beat -l info
