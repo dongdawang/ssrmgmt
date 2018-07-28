@@ -11,6 +11,8 @@ from .models import UserProfile, EmailVerifyRecord, UserModifyRecord
 from apps.utils.mixin import LoginRequireMixin
 from apps.utils.email_send import send_type_email
 
+from pyecharts import Bar
+
 
 class Index(View):
 
@@ -69,9 +71,16 @@ class Profile(LoginRequireMixin, View):
     def get(self, request):
         user = request.user
         if user is not None:
-            return render(request, 'users/profile.html', {})
+            bar_ins = bar()
+            dct = {
+                "myechart": bar_ins.render_embed(),
+                "host": "https://pyecharts.github.io/assets/js",
+                "script_list": bar_ins.get_js_dependencies(),
+                "error": '请登录后再操作',
+            }
+            return render(request, 'users/profile.html', dct)
         else:
-            return render(request, 'users/error.html', {'error': '请登录后再操作'})
+            return render(request, 'users/error.html', {"error": '请登录后再操作'})
 
     def post(self, request):
         pass
@@ -156,3 +165,10 @@ class ModifyEmail(LoginRequireMixin, View):
         else:
             return render(request, "users/profile.html", {"email_status": "验证码错误"})
 
+
+def bar():
+    bar_ins = Bar("我的第一个图表", "这里是副标题")
+    bar_ins.add("服装",
+            ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"], [5, 20, 36, 10, 75, 90],
+            is_more_utils=True)
+    return bar_ins

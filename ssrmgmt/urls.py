@@ -22,6 +22,7 @@ from django.conf import settings
 from users.views import (Index, Login, Register, Profile, ProfilePhotoUpload,
                          ModifyPwd, ModifyEmail, SendEmailCode)
 from goods.views import Ping
+from operation.views import CreateAccount
 # from ssrmgmt.settings import MEDIA_ROOT
 
 users_url = [
@@ -34,6 +35,11 @@ users_url = [
     path('profile/send-mail', SendEmailCode.as_view(), name='send_mail'),
 ]
 
+operation_url = [
+    path('createaccount/<str:ip>', CreateAccount.as_view(), name='create_account'),
+    path('createaccount/', CreateAccount.as_view(), name='create_account'),
+]
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', Index.as_view(), name='index'),
@@ -41,6 +47,7 @@ urlpatterns = [
     # 创建一个命名空间，可以有效的对url进行分类
     path('users/', include((users_url, "users")), name='users'),
     # path('media/<str>', serve, {"document_root": MEDIA_ROOT})
+    path('operation/', include((operation_url, 'operation')), name='operation')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

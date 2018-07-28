@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}<title>个人中心</title>{% endblock %}
+
+{% block otherimport %}{% endblock %}
+{% block style %}{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row row-offcanvas row-offcanvas-right">
+        <div class="col-6 col-md-2 sidebar-offcanvas" id="sidebar">
+            {% block usernav %}{% endblock %}
+        </div><!--/span-->
+        <div class="col-12 col-md-10">
+            {% block usercontent %}{% endblock %}
+        </div><!--/span-->
+    </div><!--/row-->
+</div>
+{% endblock %}
+{% block script %}{% endblock %}

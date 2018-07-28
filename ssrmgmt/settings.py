@@ -90,6 +90,10 @@ DATABASES = {
         'PASSWORD': '',
         'HOST': '127.0.0.1',
         'PORT': '3306',
+        'OPTIONS': {
+            # 取消外键检查
+            "init_command": "SET foreign_key_checks = 0;",
+        },
     }
 }
 

@@ -1,81 +1,94 @@
-{% load staticfiles %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>个人信息</title>
-    <link rel="shortcut icon" href="{% static 'image/favicon.ico' %}" type="image/x-ico">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js">
-    </script>
-</head>
-<body>
-<div>
-    <form enctype="multipart/form-data" action="{% url 'users:profile-photo' %}" method="post">
-        <img name="profile_photo" src="{{ MEDIA_URL }}{{ request.user.profile_photo }}"
-             hight="80" width="80" alt="头像显示"><br>
-        修改头像:<input type="file" name="profile_photo"><br>
-        {% csrf_token %}
-        <input type="submit" value="提交头像修改">
-    </form>
-    <br>
-    <br>
-    <form action="{% url 'users:modify-pwd' %}" method="post">
-        输入密码:<input type="text" name="password1"><br>
-        再次确认:<input type="text" name="password2"><br>
-        <input type="submit" value="确认修改">
-        {% csrf_token %}
-    </form>
-    <br>
-    <br>
-    <br>
-    <form enctype="multipart/form-data">
-        {#    <input type="file" name="profile_photo">#}
-        {#    <input type="submit" value="提交">#}
-        username:<input name="username" value="{{ request.user.username }}" readonly="readonly"><br>
-        {#    password:<p>{{ request.user.password }}</p>#}
-        email:<input name="email" value="{{ request.user.email }}" readonly="readonly"><br>
-        nick:<input name="nick_name" value="{{ request.user.nick_name }}"><br>
-        gender:male:<input type="radio" name="gender" value="male"
-            {% if request.user.gender == 'male' %}
-                           checked="checked"
+{% extends 'users/userbase.html' %}
+
+{#{% block title %}<title>JJJJJ</title> {% endblock %}#}
+{% block test %}<a href="#" class="list-group-item">个人中心</a>{% endblock %}
+
+{# 额外导入一下js等，支持图表 #}
+{% block otherimport %}
+    {% for jsfile_name in script_list %}
+        <script src="{{ host }}/{{ jsfile_name }}.js"></script>
+    {% endfor %}
+{% endblock %}
+
+{# 放置自定义的样式 #}
+{% block style %}
+
+{% endblock %}
+
+{# 放置用户信息目录 #}
+{% block usernav %}
+    <div class="list-group">
+        <a href="#" class="list-group-item active">Link</a>
+        <a href="#" class="list-group-item">Link</a>
+    </div>
+{% endblock %}
+
+{# 放置用户内容 #}
+{% block usercontent %}
+    <div class="jumbotron">
+        <div class="jumbotron bg-info">
+            <h2>头像修改</h2>
+            <form enctype="multipart/form-data" action="{% url 'users:profile-photo' %}" method="post">
+                <img src="{{ MEDIA_URL }}{{ request.user.profile_photo }}"
+                     class="rounded" alt="Cinque Terre" width="230" height="200">
+                修改头像:<input type="file" name="profile_photo"><br>
+                {% csrf_token %}
+                <input type="submit" value="提交头像修改">
+            </form>
+        </div>
+        <div class="jumbotron bg-warning">
+            <h2>密码修改</h2>
+            <form action="{% url 'users:modify-pwd' %}" method="post">
+                <div class="form-group">
+                    <label for="usr">输入密码</label>
+                    <input type="text" name="password1" class="form-control" id="pwd1">
+                </div>
+                <div class="form-group">
+                    <label for="pwd">再次确认</label>
+                    <input type="text" name="password2" class="form-control" id="pwd2">
+                </div>
+                <input type="submit" value="确认修改">
+                {% csrf_token %}
+            </form>
+        </div>
+
+        <div class="jumbotron bg-warning">
+            <h2>邮箱修改</h2>
+            <form action="{% url 'users:modify-email' %}" method="post">
+                <input type="text" id="email" name="email" value=""><br>
+                <input type="text" id="code" name="code"><input type="button" value="发送验证码" onclick="send_email()"><br>
+                <p>{{ email_status }}</p>
+                <input type="submit" value="修改邮箱">
+                {% csrf_token %}
+            </form>
+            </form>
+        </div>
+        <div class="jumbotron bg-secondary ">
+            <h2>用户信息</h2>
+            <form enctype="multipart/form-data">
+                <input type="file" name="profile_photo">
+                <input type="submit" value="提交">
+                username:<input name="username" value="{{ request.user.username }}" readonly="readonly"><br>
+                password:<p>{{ request.user.password }}</p>
+                email:<input name="email" value="{{ request.user.email }}" readonly="readonly"><br>
+                nick:<input name="nick_name" value="{{ request.user.nick_name }}"><br>
+                gender:male:<input type="radio" name="gender" value="male"
+                    {% if request.user.gender == 'male' %}
+                                   checked="checked"
+                    {% endif %}>
+                female:<input type="radio" name="gender" value="female" {% if request.user.gender == 'female' %}
+                              checked="checked"
             {% endif %}>
-        female:<input type="radio" name="gender" value="female" {% if request.user.gender == 'female' %}
-                      checked="checked"
-    {% endif %}>
 
-    </form>
-    <br>
-    <br>
-    <br>
-    <form action="{% url 'users:modify-email' %}" method="post">
-        <input type="text" id="email" name="email" value=""><br>
-        <input type="text" id="code" name="code"><input type="button" value="发送验证码" onclick="send_email()"><br>
-        <p>{{ email_status }}</p>
-        <input type="submit" value="修改邮箱">
-        {% csrf_token %}
-    </form>
-</div>
-<script language="JavaScript">
-    function send_email() {
-        var params = {
-            "email": $("#email").val(),
-            "csrfmiddlewaretoken": $("input[name='csrfmiddlewaretoken']").val(),
-        };
-        alert(params.email);
-        $.ajax({
-            type: "POST",
-            url: "{% url 'users:send_mail' %}",
-            data: params,
-            dataType : "json",
-            success: function (respMsg) {
-            }
-        });
-    }
+            </form>
+        </div>
 
-    function test() {
-        var v = $('#email').val();
-        alert(v)
-    }
-</script>
-</body>
-</html>
+        <div class="jumbotron bg-light">
+            <h2>用户图表</h2>
+            <div>
+                {{ myechart|safe }}
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

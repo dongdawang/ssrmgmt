@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+# from goods.models import SsrAccount
 
 
 class UserProfile(AbstractUser):
@@ -44,7 +45,8 @@ class EmailVerifyRecord(models.Model):
 class BandwidthUsageRecord(models.Model):
     """记录用户在各个时间点的流量使用情况
     """
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name="用户")
+    # model循环导入问题
+    user = models.ForeignKey("goods.SsrAccount", on_delete=models.CASCADE, verbose_name="用户")
     bytes_received = models.CharField(max_length=20, null=False, blank=False, verbose_name="收到的数据")
     bytes_sent = models.CharField(max_length=20, null=False, blank=False, verbose_name="发送的数据")
     add_time = models.DateTimeField(default=datetime.now, verbose_name="添加时间")
@@ -62,7 +64,7 @@ class UserModifyRecord(models.Model):
         ("modify_password", "修改密码"),
         ("modify_profile_photo", "修改头像"),
     )
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name="用户")
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name="账号")
     modify_type = models.CharField(choices=chics, max_length=25, verbose_name="修改类型")
     add_time = models.DateTimeField(default=datetime.now, verbose_name="添加时间")
 
