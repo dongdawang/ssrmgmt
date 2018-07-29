@@ -20,7 +20,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 from users.views import (Index, Login, Register, Profile, ProfilePhotoUpload,
-                         ModifyPwd, ModifyEmail, SendEmailCode)
+                         ModifyPwd, ModifyEmail, SendEmailCode, UserCharts)
 from goods.views import Ping
 from operation.views import CreateAccount
 # from ssrmgmt.settings import MEDIA_ROOT
@@ -33,6 +33,7 @@ users_url = [
     path('profile/modify-pwd', ModifyPwd.as_view(), name='modify-pwd'),
     path('profile/modify-email', ModifyEmail.as_view(), name='modify-email'),
     path('profile/send-mail', SendEmailCode.as_view(), name='send_mail'),
+    path('profile/charts', UserCharts.as_view(), name='usercharts')
 ]
 
 operation_url = [

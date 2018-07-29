@@ -1,101 +1,90 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="shortcut icon" href="{% static 'image/favicon.ico' %}" type="image/x-ico">
+{% extends 'base.html' %}
 
-    <title>创建账号</title>
+{% block title %}<title>SSR用户创建</title>{% endblock %}
 
-    <!-- Bootstrap core CSS -->
-    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+{% block content %}
+    <div class="container">
+        <div class="jumbotron">
+            <div class="row">
+                <div class="col-6 col-md-4 offset-md-4">
+                    <form class="form-signin" method="post" action="{% url 'operation:create_account' %}">
+                        <input type="hidden" name="ip" value="{{ account.ip }}">
+                        <label for="exampleSelect1">姓名</label>
+                        <input type="text" name="username" id="inputuser" class="form-control" placeholder="name"
+                               required
+                               autofocus>
+                        <label for="exampleSelect1">密码</label>
+                        <input type="text" name="password" id="inputPassword" class="form-control"
+                               placeholder="Password"
+                               required>
+                        {% if info is not None %}
+                            <p class="bg-warning text-muted">
+                                {{ info }}
+                            </p>
+                        {% endif %}
+                        <fieldset class="form-group">
+                            <label for="exampleSelect1">加密方法</label>
+                            <select name="method" class="form-control" id="exampleSelect1">
+                                {% for i in account.method %}
+                                    <option>{{ i }}</option>
+                                {% endfor %}
+                            </select>
+                        </fieldset>
+                        <fieldset class="form-group">
+                            <label for="exampleSelect1">协议</label>
+                            <select name="protocol" class="form-control" id="exampleSelect1">
+                                {% for i in account.protocol %}
+                                    <option>{{ i }}</option>
+                                {% endfor %}
+                            </select>
+                            <label class="c-input c-checkbox">
+                                {% if account.protocol_compatible %}
+                                    <input type="checkbox" name="protocol_yn" checked="checked">
+                                {% else %}
+                                    <input type="checkbox" name="protocol_yn">
+                                {% endif %}
+                                <span class="c-indicator"></span>
+                                兼容原版
+                            </label>
+                        </fieldset>
+                        <fieldset class="form-group">
+                            <label for="exampleSelect1">混淆协议</label>
+                            <select name="obfs" class="form-control" id="exampleSelect1">
+                                {% for i in account.obfs %}
+                                    <option>{{ i }}</option>
+                                {% endfor %}
+                            </select>
+                            <label class="c-input c-checkbox">
+                                {% if account.obfs_compatible %}
+                                    <input type="checkbox" name="obfs_yn" checked="checked">
+                                {% else %}
+                                    <input type="checkbox" name="obfs_yn">
+                                {% endif %}
 
-    <!-- Custom styles for this template -->
-    <link href="{% static 'bootstrap/css/signin.css' %}" rel="stylesheet">
-</head>
-<body>
-<div class="container">
-    <form class="form-signin" method="post" action="{% url 'operation:create_account' %}">
-        <input type="hidden" name="ip" value="{{ account.ip }}">
-        <label for="exampleSelect1">姓名</label>
-        <input type="text" name="username" id="inputuser" class="form-control" placeholder="name" required
-               autofocus>
-        <label for="exampleSelect1">密码</label>
-        <input type="text" name="password" id="inputPassword" class="form-control" placeholder="Password" required>
-        {% if info is not None %}
-            <p class="bg-warning text-muted">
-                {{ info }}
-            </p>
-        {% endif %}
-        <fieldset class="form-group">
-            <label for="exampleSelect1">加密方法</label>
-            <select name="method" class="form-control" id="exampleSelect1">
-                {% for i in account.method %}
-                    <option>{{ i }}</option>
-                {% endfor %}
-            </select>
-        </fieldset>
-        <fieldset class="form-group">
-            <label for="exampleSelect1">协议</label>
-            <select name="protocol" class="form-control" id="exampleSelect1">
-                {% for i in account.protocol %}
-                    <option>{{ i }}</option>
-                {% endfor %}
-            </select>
-            <label class="c-input c-checkbox">
-                {% if account.protocol_compatible %}
-                    <input type="checkbox" name="protocol_yn" checked="checked">
-                {% else %}
-                    <input type="checkbox" name="protocol_yn">
-                {% endif %}
-                <span class="c-indicator"></span>
-                兼容原版
-            </label>
-        </fieldset>
-        <fieldset class="form-group">
-            <label for="exampleSelect1">混淆协议</label>
-            <select name="obfs" class="form-control" id="exampleSelect1">
-                {% for i in account.obfs %}
-                    <option>{{ i }}</option>
-                {% endfor %}
-            </select>
-            <label class="c-input c-checkbox">
-                {% if account.obfs_compatible %}
-                    <input type="checkbox" name="obfs_yn" checked="checked">
-                {% else %}
-                    <input type="checkbox" name="obfs_yn">
-                {% endif %}
-
-                <span class="c-indicator"></span>
-                兼容原版
-            </label>
-        </fieldset>
-        <div class="form-group">
-            {#            <label class="sr-only" for="exampleInputAmount">Amount (in dollars)</label>#}
-            <label for="exampleSelect1">流量</label>
-            <div class="input-group">
-                {#                <div class="input-group-addon">$</div>#}
-                <select name="transfer_enable" class="form-control" id="exampleSelect1">
-                    {% for i in account.transfer_enable %}
-                        <option>{{ i }}</option>
-                    {% endfor %}
-                </select>
-                <div class="input-group-addon">GB</div>
+                                <span class="c-indicator"></span>
+                                兼容原版
+                            </label>
+                        </fieldset>
+                        <div class="form-group">
+                            <label for="exampleSelect1">流量</label>
+                            <div class="input-group">
+                                <select name="transfer_enable" class="form-control" id="exampleSelect1">
+                                    {% for i in account.transfer_enable %}
+                                        <option>{{ i }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">GB</span>
+                                </div>
+{#                                <div class="input-group-addon">GB</div>#}
+                            </div>
+                        </div>
+                        <button class="btn btn-lg btn-primary btn-block" type="submit">创建SS账户</button>
+                        {% csrf_token %}
+                    </form>
+                </div>
+                <div class="col-12 col-md-4"></div>
             </div>
         </div>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">创建SS账户</button>
-        {% csrf_token %}
-    </form>
-</div> <!-- /container -->
-
-
-<!-- Bootstrap core JavaScript
-================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-<script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
-</body>
-</html>
+    </div>
+{% endblock %}

@@ -1,46 +1,21 @@
 import json
 import os
-# import sys
 
 
 class SsrMgr:
     def __int__(self):
-        # self.path = os.path.abspath(r'/usr/local/shadowsocksr/mudb.json')
-        self.path = r'ssrmgmt/tests/mudb.json'
-
-        # if not os.path.exists(self.path):
-        #     self.path = 'ssrmgmt/tests/mudb.json'
-        # raise FileNotFoundError()
+        self.path = os.path.abspath(r'/usr/local/shadowsocksr/mudb.json')
 
     def band_record(self):
         """返回用户的流量使用情况
         :return: duct, key=username, value={u:'', d:''}
         """
-        sss = """
-        [
-    {
-        "d": 100,
-        "enable": 1,
-        "forbidden_port": "",
-        "method": "aes-128-ctr",
-        "obfs": "tls1.2_ticket_auth_compatible",
-        "passwd": "pwdone",
-        "port": 6899,
-        "protocol": "auth_sha1_v4_compatible",
-        "protocol_param": "",
-        "speed_limit_per_con": 0,
-        "speed_limit_per_user": 0,
-        "transfer_enable": 900727656415232,
-        "u": 101,
-        "user": "dotone"
-    }
-]"""
         band_usage = {}
         info_lst = []
         print(__file__)
-        # with open(r'mudb.json', 'rb') as f:
-        #     info_lst = json.load(f)
-        info_lst = json.loads(sss)
+        with open(r'mudb.json', 'rb') as f:
+            info_lst = json.load(f)
+        info_lst = json.loads(info_lst)
         if info_lst is not None:
             if isinstance(info_lst, list):
                 for user in info_lst:

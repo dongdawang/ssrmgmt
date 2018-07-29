@@ -71,14 +71,7 @@ class Profile(LoginRequireMixin, View):
     def get(self, request):
         user = request.user
         if user is not None:
-            bar_ins = bar()
-            dct = {
-                "myechart": bar_ins.render_embed(),
-                "host": "https://pyecharts.github.io/assets/js",
-                "script_list": bar_ins.get_js_dependencies(),
-                "error": '请登录后再操作',
-            }
-            return render(request, 'users/profile.html', dct)
+            return render(request, 'users/profile.html', {})
         else:
             return render(request, 'users/error.html', {"error": '请登录后再操作'})
 
@@ -116,6 +109,11 @@ class ProfilePhotoUpload(LoginRequireMixin, View):
 class ModifyPwd(LoginRequireMixin, View):
     """个人中心修改密码
     """
+    def get(self, request):
+        if request.user is not None:
+            return render(request, 'users/password.html', {})
+        else:
+            return render(request, 'users/error.html', {"error": '请登录后再操作'})
 
     @record_modify("modify_password")
     def post(self, request):
@@ -129,7 +127,7 @@ class ModifyPwd(LoginRequireMixin, View):
             user = request.user
             user.password = make_password(pwd2)
             user.save()
-            return render(request, "users/profile.html", {})
+            return render(request, "users/profile.html", {"status": "密码修改成功！"})
         else:
             return render(request, "users/error.html", {"error": "form表单无效"})
 
@@ -141,15 +139,22 @@ class SendEmailCode(LoginRequireMixin, View):
         email = request.POST.get('email', '')
 
         if UserProfile.objects.filter(email=email):
-            return render(request, "users/error.html", {"error": "邮箱已存在"})
+            return render(request, "users/error.html", {"error": "邮箱已存在", "target_email": email})
         else:
             send_type_email(email, send_type="modify_email")
-            return render(request, "users/profile.html", {"email_status": "发送成功"})
+            return render(request, "users/email.html", {"status": "发送成功", "target_email": email})
 
 
 class ModifyEmail(LoginRequireMixin, View):
     """修改个人邮箱
     """
+    def get(self, request):
+        user = request.user
+        if user is not None:
+            dct = {}
+            return render(request, 'users/email.html', dct)
+        else:
+            return render(request, 'users/error.html', {"error": '请登录后再操作'})
 
     @record_modify("modify_email")
     def post(self, request):
@@ -161,9 +166,23 @@ class ModifyEmail(LoginRequireMixin, View):
             user = request.user
             user.email = email
             user.save()
-            return render(request, "users/profile.html", {"email_status": "邮箱修改成功"})
+            return render(request, "users/profile.html", {"status": "邮箱修改成功"})
         else:
-            return render(request, "users/profile.html", {"email_status": "验证码错误"})
+            return render(request, "users/email.html", {"status": "验证码错误"})
+
+
+class UserCharts(LoginRequireMixin, View):
+    """管理用户的图表
+    """
+    def get(self, request):
+        bar_ins = bar()
+        dct = {
+            "myechart": bar_ins.render_embed(),
+            "host": "https://pyecharts.github.io/assets/js",
+            "script_list": bar_ins.get_js_dependencies(),
+            "error": '请登录后再操作',
+        }
+        return render(request, 'users/charts.html', dct)
 
 
 def bar():

@@ -1,22 +1,42 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-    <link rel="shortcut icon" href="{% static 'image/favicon.ico' %}" type="image/x-ico">
-</head>
-<body>
-<div>
-    <form method="post" action="{% url 'users:login' %}">
-        UserName:<input type="text" value="" name="username"><br>
-        PassWord:<input type="text" value="" name="password"><br>
-        <input type="submit" value="提价">
-        {% csrf_token %}
-        {% if result != None %}
-            <p>red{{ result }}</p>
-        {% endif %}
-    </form>
-</div>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}<title>Login</title>{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="jumbotron">
+            <div class="row">
+                <div class="col-6 col-md-4 offset-md-4">
+                    <h4>登录</h4>
+                    <form method="post" action="{% url 'users:login' %}">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">账户</span>
+                            </div>
+                            <input type="text" class="form-control" name="username" value="">
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">密码</span>
+                            </div>
+                            <input type="text" class="form-control" name="password" value="">
+                        </div>
+                        <div>
+                            <a class="text-md-left" href="{% url 'users:register' %}">注册</a>
+                            <a class="text-md-right" href="">忘记密码?</a>
+                        </div>
+                        {% csrf_token %}
+                        {% if result != None %}
+                            <div class="alert alert-warning alert-dismissable">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                <strong>失败!</strong> {{ result }}
+                            </div>
+                        {% endif %}
+                        <button class="btn btn-primary btn-block" type="submit">登录</button>
+                    </form>
+                </div>
+                <div class="col-12 col-md-4"></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

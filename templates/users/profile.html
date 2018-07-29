@@ -3,13 +3,6 @@
 {#{% block title %}<title>JJJJJ</title> {% endblock %}#}
 {% block test %}<a href="#" class="list-group-item">个人中心</a>{% endblock %}
 
-{# 额外导入一下js等，支持图表 #}
-{% block otherimport %}
-    {% for jsfile_name in script_list %}
-        <script src="{{ host }}/{{ jsfile_name }}.js"></script>
-    {% endfor %}
-{% endblock %}
-
 {# 放置自定义的样式 #}
 {% block style %}
 
@@ -18,38 +11,82 @@
 {# 放置用户信息目录 #}
 {% block usernav %}
     <div class="list-group">
-        <a href="#" class="list-group-item active">Link</a>
-        <a href="#" class="list-group-item">Link</a>
+        <a href="{% url 'users:profile' %}" class="list-group-item active">个人信息</a>
+        <a href="{% url 'users:modify-pwd' %}" class="list-group-item">修改密码</a>
+        <a href="{% url 'users:modify-email' %}" class="list-group-item">修改邮箱</a>
+        <a href="{% url 'users:usercharts' %}" class="list-group-item">用户图表</a>
     </div>
 {% endblock %}
 
 {# 放置用户内容 #}
 {% block usercontent %}
     <div class="jumbotron">
-        <div class="jumbotron bg-info">
-            <h2>头像修改</h2>
-            <form enctype="multipart/form-data" action="{% url 'users:profile-photo' %}" method="post">
-                <img src="{{ MEDIA_URL }}{{ request.user.profile_photo }}"
-                     class="rounded" alt="Cinque Terre" width="230" height="200">
-                修改头像:<input type="file" name="profile_photo"><br>
-                {% csrf_token %}
-                <input type="submit" value="提交头像修改">
-            </form>
-        </div>
-        <div class="jumbotron bg-warning">
-            <h2>密码修改</h2>
-            <form action="{% url 'users:modify-pwd' %}" method="post">
-                <div class="form-group">
-                    <label for="usr">输入密码</label>
-                    <input type="text" name="password1" class="form-control" id="pwd1">
+        <div class="jumbotron">
+            <div class="row">
+                <div class="col-6 col-md-4">
+                    <img src="{{ MEDIA_URL }}{{ request.user.profile_photo }}"
+                         class="rounded" alt="Cinque Terre" width="240" height="210">
+                    <form enctype="multipart/form-data" action="{% url 'users:profile-photo' %}" method="post">
+                        <div class="input-group custom-file mb-3 input-group-sm">
+                            <label class="custom-file-label" for="customFile">选择文件</label>
+                            <input type="file" class="custom-file-input" id="customFile" name="profile_photo">
+                            <button class="btn btn-light" type="submit">修改</button>
+                        </div>
+                        {% csrf_token %}
+                    </form>
                 </div>
-                <div class="form-group">
-                    <label for="pwd">再次确认</label>
-                    <input type="text" name="password2" class="form-control" id="pwd2">
+                <div class="col-12 col-md-8">
+                    <table class="table">
+                        <tbody>
+                        <tr class="table-info">
+                            <td class="text-right  font-weight-bold">NickName:</td>
+                            <td>{{ request.user.nick_name }}</td>
+                            <td>def@somemail.com</td>
+                        </tr>
+                        <tr class="table-light">
+                            <td class="text-right  font-weight-bold">Name:</td>
+                            <td>{{ request.user.username }}</td>
+                            <td>def@somemail.com</td>
+                        </tr>
+                        <tr class="table-info">
+                            <td class="text-right  font-weight-bold">Password:</td>
+                            <td>******</td>
+                            <td><a href="/">修改</a></td>
+                        </tr>
+                        <tr class="table-light">
+                            <td class="text-right  font-weight-bold">Email:</td>
+                            <td>{{ request.user.email }}</td>
+                            <td><a href="/">修改</a></td>
+                        </tr>
+                        <tr class="table-info">
+                            <td class="text-right  font-weight-bold">Gender:</td>
+                            {% if request.user.gender == 'female' %}
+                                <td>{{ request.user.gender }}</td>
+                            {% else %}
+                                <td>{{ request.user.gender }}</td>
+                            {% endif %}
+                            <td></td>
+                        </tr>
+                        <tr class="table-light">
+                            <td class="text-right  font-weight-bold">Name:</td>
+                            <td>{{ request.user.username }}</td>
+                            <td></td>
+                        </tr>
+                        <tr class="table-info">
+                            <td class="text-right  font-weight-bold">Email:</td>
+                            <td>{{ request.user.email }}</td>
+                            <td></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    {% if status %}
+                        <div class="alert alert-success alert-dismissable">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            <strong>成功!</strong> {{ status }}
+                        </div>
+                    {% endif %}
                 </div>
-                <input type="submit" value="确认修改">
-                {% csrf_token %}
-            </form>
+            </div>
         </div>
 
         <div class="jumbotron bg-warning">
@@ -61,34 +98,14 @@
                 <input type="submit" value="修改邮箱">
                 {% csrf_token %}
             </form>
-            </form>
-        </div>
-        <div class="jumbotron bg-secondary ">
-            <h2>用户信息</h2>
-            <form enctype="multipart/form-data">
-                <input type="file" name="profile_photo">
-                <input type="submit" value="提交">
-                username:<input name="username" value="{{ request.user.username }}" readonly="readonly"><br>
-                password:<p>{{ request.user.password }}</p>
-                email:<input name="email" value="{{ request.user.email }}" readonly="readonly"><br>
-                nick:<input name="nick_name" value="{{ request.user.nick_name }}"><br>
-                gender:male:<input type="radio" name="gender" value="male"
-                    {% if request.user.gender == 'male' %}
-                                   checked="checked"
-                    {% endif %}>
-                female:<input type="radio" name="gender" value="female" {% if request.user.gender == 'female' %}
-                              checked="checked"
-            {% endif %}>
-
-            </form>
         </div>
 
-        <div class="jumbotron bg-light">
-            <h2>用户图表</h2>
-            <div>
-                {{ myechart|safe }}
-            </div>
-        </div>
+{#        <div class="jumbotron bg-light">#}
+{#            <h2>用户图表</h2>#}
+{#            <div>#}
+{#                {{ myechart|safe }}#}
+{#            </div>#}
+{#        </div>#}
 
     </div>
 {% endblock %}
