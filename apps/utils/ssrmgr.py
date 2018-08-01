@@ -43,7 +43,7 @@ class SsrMgr:
             '-t': dct['transfer'],
             '-f': dct['forbid'],
         }
-        add_cmd = "python /usr/local/shadowsocksr/mujson_mgr.py -a"
+        add_cmd = "cd /usr/local/shadowsocksr && python /usr/local/shadowsocksr/mujson_mgr.py -a"
         for k, v in params.items():
             add_cmd += " "
             add_cmd += k
@@ -52,3 +52,7 @@ class SsrMgr:
 
         res = os.popen(add_cmd)
         return res
+
+"""python /usr/local/shadowsocksr/mujson_mgr.py -a
+ -u fasfa -p 7777 -k 12345 -m aes-128-ctr -O auth_sha1_v4_compatible -G ""
+  -o tls1.2_ticket_auth_compatible -s 0 -S 0 -t 100 -f "" """
