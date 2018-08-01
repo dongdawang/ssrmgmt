@@ -43,7 +43,7 @@ class SsrMgr:
             '-t': dct['transfer'],
             '-f': dct['forbid'],
         }
-        add_cmd = "/usr/local/shadowsocksr/python mujson_mgr.py -a"
+        add_cmd = "python /usr/local/shadowsocksr/mujson_mgr.py -a"
         for k, v in params.items():
             add_cmd += " "
             add_cmd += k
