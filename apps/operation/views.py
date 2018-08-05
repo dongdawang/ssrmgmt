@@ -68,8 +68,8 @@ class CreateAccount(LoginRequireMixin, View):
                     '-t': request.POST.get("transfer_enable", ""),
                     '-f': "",
                 }
-                # sgr = SsrMgr()
-                # sgr.add_account(acout)
+                sgr = SsrMgr()
+                sgr.add_account(acout)
                 ssr_account = SsrAccount()
                 ssr_account.ip = ip
                 ssr_account.user = request.user

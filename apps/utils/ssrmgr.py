@@ -31,27 +31,32 @@ class SsrMgr:
 
     def add_account(self, dct):
         params = {
-            '-u': dct['user'],
-            '-p': dct['port'],
-            '-k': dct['password'],
-            '-m': dct['method'],
-            '-O': dct['protocol'],
-            '-G': dct['protocol_param'],
-            '-o': dct['obfs'],
-            '-s': dct['limit_per_con'],
-            '-S': dct['limit_per_user'],
-            '-t': dct['transfer'],
-            '-f': dct['forbid'],
+            '-u': dct['-u'],
+            '-p': dct['-p'],
+            '-k': dct['-k'],
+            '-m': dct['-m'],
+            '-O': dct['-O'],
+            '-G': dct['-G'],
+            '-o': dct['-o'],
+            '-s': dct['-s'],
+            '-S': dct['-S'],
+            '-t': dct['-t'],
+            '-f': dct['-f'],
         }
         add_cmd = "cd /usr/local/shadowsocksr && python /usr/local/shadowsocksr/mujson_mgr.py -a"
         for k, v in params.items():
             add_cmd += " "
             add_cmd += k
             add_cmd += " "
+            # 如果v是空字符串就赋值为""占位
+            v = r'""' if v == "" else v
             add_cmd += str(v)
 
         res = os.popen(add_cmd)
         return res
+
+"""cd /usr/local/shadowsocksr && python /usr/local/shadowsocksr/mujson_mgr.py -a
+ -t 50 -f  -o tls1.2_ticket_auth_compatible -u fsasfa -S 0 -s 0 -G 5 -O auth_aes128_md5_compatible -m aes-128-ctr -k gasgdag -p 7883"""
 
 """python /usr/local/shadowsocksr/mujson_mgr.py -a
  -u fasfa -p 7777 -k 12345 -m aes-128-ctr -O auth_sha1_v4_compatible -G ""
