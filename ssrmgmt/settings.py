@@ -27,9 +27,9 @@ sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 SECRET_KEY = 'oa-70f*fdrfz&$_9k8!tk(!nfw_y*j7fs&t=090$pte3c1df#9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -89,7 +89,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'ssrmgmt',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': 'root',
         'HOST': '127.0.0.1',
         'PORT': '3306',
         'OPTIONS': {
@@ -145,9 +145,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
+STATIC_ROOT = os.path.join(BASE_DIR, "mystatic")
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, "static"),
+# ]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
