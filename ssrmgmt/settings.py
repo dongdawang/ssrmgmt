@@ -60,6 +60,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'ssrmgmt.urls'
 
+LOGOUT_REDIRECT_URL = "index"
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -95,6 +97,17 @@ DATABASES = {
             "init_command": "SET foreign_key_checks = 0;",
         },
     }
+}
+
+# 设置django使用redis做缓存
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': '127.0.0.1:6379',
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    },
 }
 
 # Password validation
@@ -154,10 +167,12 @@ CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/9'
 # Only add pickle to this list if your broker is secured
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Shanghai'
 CELERY_BEAT_SCHEDULE = {
     'task-one': {
         'task': 'users.tasks.band_record',
-        'schedule': 5,
+        # 整点执行一次
+        'schedule': crontab(minute='0', hour='*'),
         # 'args': ("xxxxxxxxx",),
     },
 }

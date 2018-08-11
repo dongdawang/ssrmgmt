@@ -4,7 +4,7 @@
 
 {% block content %}
     <div class="container">
-        <div class="jumbotron">
+        <div class="jumbotron bg-light">
             <div class="jumbotron bg-light">
                 <h2>服务器列表</h2>
                 <p>点击创建SSR账号</p>
@@ -64,7 +64,7 @@
         };
 
         $.ping({
-            url: 'http://127.0.0.1:8000/ping',
+            url: 'http://{{ ip }}:80/ping',
             beforePing: function () {
                 $('#ping').html('')
             },

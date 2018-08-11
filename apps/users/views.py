@@ -5,22 +5,23 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.hashers import make_password
 
-from goods.models import SsrServer
+from goods.models import SsrServer, SsrAccount
 from .forms import UploadProfilePhoto, ModifyPwdForm
 from .models import UserProfile, EmailVerifyRecord, UserModifyRecord
 from apps.utils.mixin import LoginRequireMixin
 from apps.utils.email_send import send_type_email
 
 from pyecharts import Bar
+from apps.utils.nets import get_host_ip_cache
 
 
 class Index(View):
 
     def get(self, request):
-        # session = request.COOKIES.get('sessionid')
         servers = SsrServer.objects.all()
         data = {
             'servers': servers,
+            'ip': get_host_ip_cache(),
         }
         return render(request, 'index.html', data)
 
@@ -82,6 +83,7 @@ class Profile(LoginRequireMixin, View):
 def record_modify(modify_type=None):
     """记录每次修改个人信息的装饰器"""
     def decorator(func):
+        @functools.wraps(func)
         def wrapper(self, request, *args, **kwargs):
             modify = UserModifyRecord()
             modify.user = request.user
@@ -183,6 +185,15 @@ class UserCharts(LoginRequireMixin, View):
             "error": '请登录后再操作',
         }
         return render(request, 'users/charts.html', dct)
+
+
+class UserAccounts(LoginRequireMixin, View):
+    """获取用户创建的SSR账号
+    """
+    def get(self, request):
+        user = request.user
+        accounts = SsrAccount.objects.filter(user=user)
+        return render(request, 'users/accounts.html', {'accounts': accounts})
 
 
 def bar():

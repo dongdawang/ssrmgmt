@@ -1,0 +1,61 @@
+{% extends 'users/userbase.html' %}
+
+{#{% block title %}<title>JJJJJ</title> {% endblock %}#}
+{% block test %}<a href="#" class="list-group-item">个人中心</a>{% endblock %}
+
+{# 额外导入一下js等，支持图表 #}
+{% block otherimport %}
+    {% for jsfile_name in script_list %}
+        <script src="{{ host }}/{{ jsfile_name }}.js"></script>
+    {% endfor %}
+{% endblock %}
+
+{# 放置自定义的样式 #}
+{% block style %}
+
+{% endblock %}
+
+{# 放置用户信息目录 #}
+{% block usernav %}
+    <div class="list-group">
+        <a href="{% url 'users:profile' %}" class="list-group-item">个人信息</a>
+        <a href="{% url 'users:modify-pwd' %}" class="list-group-item">修改密码</a>
+        <a href="{% url 'users:modify-email' %}" class="list-group-item">修改邮箱</a>
+        <a href="{% url 'users:usercharts' %}" class="list-group-item">用户图表</a>
+        <a href="{% url 'users:accounts' %}" class="list-group-item active">用户SSR账号</a>
+    </div>
+{% endblock %}
+
+{# 放置用户内容 #}
+{% block usercontent %}
+    <div class="jumbotron bg-light">
+        <div class="jumbotron bg-light">
+            <div class="row">
+                <div class="col-6 col-md-2">
+                </div>
+                <div class="col-12 col-md-8">
+                    <table class="table">
+                        <tbody>
+                        {% for account in accounts %}
+                            <tr class="table-info">
+                                <td class="text-right  font-weight-bold">{{ account.account_name }}</td>
+                                <td>{{ account.ip }}</td>
+                                <td>{{ account.user }}</td>
+                                <td>{{ account.add_time }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    {% if not accounts %}
+                        <div class="alert alert-success alert-dismissable">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            <strong>没有账号!</strong> <a href="#" class="alert-link">去创建</a>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-6 col-md-2">
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

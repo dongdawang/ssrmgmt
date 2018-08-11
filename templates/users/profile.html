@@ -15,6 +15,7 @@
         <a href="{% url 'users:modify-pwd' %}" class="list-group-item">修改密码</a>
         <a href="{% url 'users:modify-email' %}" class="list-group-item">修改邮箱</a>
         <a href="{% url 'users:usercharts' %}" class="list-group-item">用户图表</a>
+        <a href="{% url 'users:accounts' %}" class="list-group-item">用户SSR账号</a>
     </div>
 {% endblock %}
 
@@ -41,12 +42,12 @@
                         <tr class="table-info">
                             <td class="text-right  font-weight-bold">NickName:</td>
                             <td>{{ request.user.nick_name }}</td>
-                            <td>def@somemail.com</td>
+                            <td></td>
                         </tr>
                         <tr class="table-light">
                             <td class="text-right  font-weight-bold">Name:</td>
                             <td>{{ request.user.username }}</td>
-                            <td>def@somemail.com</td>
+                            <td></td>
                         </tr>
                         <tr class="table-info">
                             <td class="text-right  font-weight-bold">Password:</td>
