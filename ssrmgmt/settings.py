@@ -178,3 +178,5 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
+# celery -A ssrmgmt worker -l info -P eventlet --logfile=/var/log/celeryd.log
+# celery -A ssrmgmt beat -l info --logfile=/var/log/celeryd.log
