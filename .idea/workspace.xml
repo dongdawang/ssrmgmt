@@ -37,6 +37,7 @@
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="CommandLine" value="46" />
+          <entry key="CommandLine" value="67" />
           <entry key="HTML" value="202" />
           <entry key="PLAIN_TEXT" value="21" />
           <entry key="Python" value="1181" />
@@ -58,7 +59,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/apps/utils/ssrmgr.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="264">
@@ -82,7 +83,7 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ssrmgmt/settings.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="432">
@@ -780,12 +781,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ssrmgmt/settings.py">
+    <entry file="file://$PROJECT_DIR$/apps/utils/ssrmgr.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="432">
           <caret line="90" column="23" lean-forward="true" selection-start-line="90" selection-start-column="23" selection-end-line="90" selection-end-column="23" />
           <folding>
-            <element signature="e#308#364#0" expanded="true" />
+            <element signature="e#0#11#0" expanded="true" />
           </folding>
         </state>
       </provider>
