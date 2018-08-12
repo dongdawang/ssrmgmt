@@ -1,5 +1,6 @@
 import json
 import os
+import random
 
 
 class SsrMgr:
@@ -11,21 +12,18 @@ class SsrMgr:
         :return: duct, key=username, value={u:'', d:''}
         """
         band_usage = {}
-        info_lst = []
-        print(__file__)
-        with open(r'mudb.json', 'rb') as f:
+        with open(self.path, 'r') as f:
             info_lst = json.load(f)
-        info_lst = json.loads(info_lst)
-        if info_lst is not None:
-            if isinstance(info_lst, list):
-                for user in info_lst:
-                    name = user['user']
-                    u = user['u']
-                    d = user['d']
-                    band_usage[name] = {
-                        'upload': u,
-                        'download': d,
-                    }
+            if info_lst is not None:
+                if isinstance(info_lst, list):
+                    for user in info_lst:
+                        name = user['user']
+                        u = user['u']
+                        d = user['d']
+                        band_usage[name] = {
+                            'upload': u,
+                            'download': d,
+                        }
 
         return band_usage
 
@@ -55,9 +53,45 @@ class SsrMgr:
         res = os.popen(add_cmd)
         return res
 
-"""cd /usr/local/shadowsocksr && python /usr/local/shadowsocksr/mujson_mgr.py -a
- -t 50 -f  -o tls1.2_ticket_auth_compatible -u fsasfa -S 0 -s 0 -G 5 -O auth_aes128_md5_compatible -m aes-128-ctr -k gasgdag -p 7883"""
+    def random_band(self):
+        """测试使用，给每个用户的流量使用付一个随机值"""
+        with open(self.path, 'r') as f:
+            users = json.load(f)
+            for user in users:
+                user['u'] = random.randint(0, 1000) * 1024 * 1024  # MB
+                user['d'] = random.randint(0, 1000) * 1024 * 1024  # MB
+            with open(self.path, 'w') as fw:
+                fw.write(json.dumps(users, indent=True))
 
-"""python /usr/local/shadowsocksr/mujson_mgr.py -a
- -u fasfa -p 7777 -k 12345 -m aes-128-ctr -O auth_sha1_v4_compatible -G ""
-  -o tls1.2_ticket_auth_compatible -s 0 -S 0 -t 100 -f "" """
+    def clear_band(self):
+        """清空用户的流量使用"""
+        with open(self.path, 'r') as f:
+            users = json.load(f)
+            for user in users:
+                user['u'] = 0
+                user['d'] = 0
+            with open(self.path, 'w') as fw:
+                fw.write(json.dumps(users, indent=True))
+
+
+# if __name__ == '__main__':
+#     cmd = """cd /usr/local/shadowsocksr
+#     && python /usr/local/shadowsocksr/mujson_mgr.py -a -t 50 -f  -o tls1.2_ticket_auth_compatible -u fsasfa -S 0 -s 0
+#     -G 5 -O auth_aes128_md5_compatible -m aes-128-ctr -k gasgdag -p 7883"""
+#     cmd2 = """python /usr/local/shadowsocksr/mujson_mgr.py -a -u fasfa -p 7777 -k 12345 -m aes-128-ctr
+#     -O auth_sha1_v4_compatible -G "" -o tls1.2_ticket_auth_compatible -s 0 -S 0 -t 100 -f "" """
+#
+#     with open('mudb.json', 'r') as fp:
+#         res = json.load(fp)
+#         print(res)
+#         print(type(res))
+#         band_usage = {}
+#         if res is not None:
+#             if isinstance(res, list):
+#                 for user in res:
+#                     user['u'] = 999
+#                     user['d'] = 1000
+#         with open('mudb.json', 'w') as fw:
+#             fw.write(json.dumps(res, indent=True))
+#     print(band_usage)
+

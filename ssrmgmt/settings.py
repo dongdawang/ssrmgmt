@@ -175,6 +175,10 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': crontab(minute='0', hour='*'),
         # 'args': ("xxxxxxxxx",),
     },
+    'task-two': {
+        'task': 'users.tasks.generate_random_band',
+        'schedule': crontab(minute='30', hour='*'),
+    }
 }
 
 # celery -A ssrmgmt worker -l info -P eventlet --logfile=/var/log/celeryd.log
