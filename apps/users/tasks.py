@@ -9,13 +9,6 @@ from apps.utils.ssrmgr import SsrMgr
 
 
 @task
-def model_record():
-    # tr = TaskRecord()
-    # tr.save()
-    return "x111111111"
-
-
-@task
 def band_record():
     srg = SsrMgr()
     band_usage = srg.band_record()
@@ -28,4 +21,13 @@ def band_record():
             bur.bytes_received = band['download']
             bur.bytes_sent = band['upload']
             bur.save()
+    # 获取user的流量信息后，将其流量清空
+    srg.clear_band()
     return "OK Record"
+
+
+@task
+def generate_random_band():
+    """给每个用户生成一个随机的流量，测试使用"""
+    srg = SsrMgr()
+    srg.random_band()
