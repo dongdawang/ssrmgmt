@@ -2,19 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5ac2d8eb-ce92-4b90-9665-3ea08da52155" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/users/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/users/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/celerybeat-schedule.bak" beforeDir="false" afterPath="$PROJECT_DIR$/celerybeat-schedule.bak" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/celerybeat-schedule.dat" beforeDir="false" afterPath="$PROJECT_DIR$/celerybeat-schedule.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/celerybeat-schedule.dir" beforeDir="false" afterPath="$PROJECT_DIR$/celerybeat-schedule.dir" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ssrmgmt/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/ssrmgmt/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ssrmgmt/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/ssrmgmt/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/users/charts.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/users/charts.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/users/email.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/users/email.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/users/password.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/users/password.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/users/profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/users/profile.html" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -44,7 +32,7 @@
           <entry key="Django Console" value="89" />
           <entry key="dummy" value="1" />
           <entry key="html" value="202" />
-          <entry key="py" value="1057" />
+          <entry key="py" value="1120" />
           <entry key="py@ssrmgmt" value="66" />
         </counts>
       </usages-collector>
@@ -53,7 +41,7 @@
           <entry key="CommandLine" value="46" />
           <entry key="HTML" value="202" />
           <entry key="PLAIN_TEXT" value="21" />
-          <entry key="Python" value="1146" />
+          <entry key="Python" value="1209" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -96,11 +84,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ssrmgmt/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4176">
-              <caret line="178" selection-start-line="178" selection-end-line="178" />
+            <state relative-caret-position="391">
+              <caret line="176" column="6" lean-forward="true" selection-start-line="176" selection-start-column="6" selection-end-line="176" selection-end-column="6" />
               <folding>
                 <element signature="e#308#364#0" expanded="true" />
               </folding>
@@ -108,11 +96,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/users/tasks.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="696">
-              <caret line="29" column="22" lean-forward="true" selection-start-line="29" selection-start-column="22" selection-end-line="29" selection-end-column="22" />
+            <state relative-caret-position="240">
+              <caret line="10" column="5" lean-forward="true" selection-start-line="10" selection-start-column="5" selection-end-line="10" selection-end-column="5" />
               <folding>
                 <element signature="e#0#56#0" expanded="true" />
               </folding>
@@ -244,9 +232,9 @@
         <option value="$PROJECT_DIR$/templates/index.html" />
         <option value="$PROJECT_DIR$/ssrmgmt/urls.py" />
         <option value="$PROJECT_DIR$/templates/base.html" />
-        <option value="$PROJECT_DIR$/ssrmgmt/settings.py" />
         <option value="$PROJECT_DIR$/apps/utils/nets.py" />
         <option value="$PROJECT_DIR$/apps/users/views.py" />
+        <option value="$PROJECT_DIR$/ssrmgmt/settings.py" />
       </list>
     </option>
   </component>
@@ -736,8 +724,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ssrmgmt/settings.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4176">
-          <caret line="178" selection-start-line="178" selection-end-line="178" />
+        <state relative-caret-position="391">
+          <caret line="176" column="6" lean-forward="true" selection-start-line="176" selection-start-column="6" selection-end-line="176" selection-end-column="6" />
           <folding>
             <element signature="e#308#364#0" expanded="true" />
           </folding>
@@ -796,8 +784,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/users/tasks.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="696">
-          <caret line="29" column="22" lean-forward="true" selection-start-line="29" selection-start-column="22" selection-end-line="29" selection-end-column="22" />
+        <state relative-caret-position="240">
+          <caret line="10" column="5" lean-forward="true" selection-start-line="10" selection-start-column="5" selection-end-line="10" selection-end-column="5" />
           <folding>
             <element signature="e#0#56#0" expanded="true" />
           </folding>
