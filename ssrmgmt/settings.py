@@ -178,5 +178,3 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
-# celery -A ssrmgmt worker -l info -P eventlet
-# celery -A ssrmgmt beat -l info
