@@ -4,7 +4,7 @@ import random
 
 
 class SsrMgr:
-    def __int__(self):
+    def __init__(self):
         self.path = os.path.abspath(r'/usr/local/shadowsocksr/mudb.json')
 
     def band_record(self):
@@ -94,4 +94,5 @@ class SsrMgr:
 #         with open('mudb.json', 'w') as fw:
 #             fw.write(json.dumps(res, indent=True))
 #     print(band_usage)
+
 
