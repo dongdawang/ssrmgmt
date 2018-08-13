@@ -36,7 +36,6 @@
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="CommandLine" value="46" />
           <entry key="CommandLine" value="67" />
           <entry key="HTML" value="202" />
           <entry key="PLAIN_TEXT" value="21" />
