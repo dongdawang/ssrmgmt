@@ -139,7 +139,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
@@ -154,10 +154,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # 邮箱设置
 EMAIL_HOST = "smtp.163.com"
-# EMAIL_PORT =
 EMAIL_HOST_USER = "ssrmgmt@163.com"
 EMAIL_HOST_PASSWORD = "ssrmgmt1233"
-EMAIL_USE_TLS = True
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+EMAIL_PORT = 465
 EMAIL_FROM = "ssrmgmt@163.com"
 
 # celery settings

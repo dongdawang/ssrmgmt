@@ -17,10 +17,11 @@ def band_record():
         account = SsrAccount.objects.filter(account_name=name)
         if account is not None:
             bur = BandwidthUsageRecord()
-            bur.user = account[0]
-            bur.bytes_received = band['download']
-            bur.bytes_sent = band['upload']
-            bur.save()
+            if bur:
+                bur.user = account[0]
+                bur.bytes_received = band['download']
+                bur.bytes_sent = band['upload']
+                bur.save()
     # 获取user的流量信息后，将其流量清空
     srg.clear_band()
     return "OK Record"
