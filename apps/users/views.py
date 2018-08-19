@@ -1,4 +1,5 @@
 import functools
+from datetime import datetime, timedelta
 
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
@@ -13,6 +14,7 @@ from apps.utils.email_send import send_type_email
 
 from pyecharts import Bar
 from apps.utils.nets import get_host_ip_cache
+from apps.utils.charts import brand_usage, get_brand_usage_line
 
 
 class Index(View):
@@ -177,11 +179,39 @@ class UserCharts(LoginRequireMixin, View):
     """管理用户的图表
     """
     def get(self, request):
-        bar_ins = bar()
+        user = request.user
+        accounts = SsrAccount.objects.filter(user=user)
+        times = ['最近一天', '最近一周', '最近一个月']
         dct = {
-            "myechart": bar_ins.render_embed(),
+            'accounts': accounts,
+            'times': times
+        }
+        return render(request, 'users/charts.html', dct)
+
+    def post(self, request):
+        user = request.user
+        accounts = SsrAccount.objects.filter(user=user)
+        times = ['最近一天', '最近一周', '最近一个月']
+        account_name = request.POST.get('account')
+        account = SsrAccount.objects.filter(account_name=account_name)
+        if account:
+            account = account[0]
+        time = request.POST.get('time')
+        line = bar()
+        # 定制图表
+        if time == '最近一天':
+            # now = datetime.now()
+            now = datetime(2018, 8, 17, 0)
+            start = now - timedelta(days=1)
+            stop = now
+            step = timedelta(hours=1)
+            line = get_brand_usage_line(account, start, stop, step)
+        dct = {
+            'accounts': accounts,
+            'times': times,
+            "myechart": line.render_embed(),
             "host": "https://pyecharts.github.io/assets/js",
-            "script_list": bar_ins.get_js_dependencies(),
+            "script_list": line.get_js_dependencies(),
             "error": '请登录后再操作',
         }
         return render(request, 'users/charts.html', dct)
@@ -197,8 +227,6 @@ class UserAccounts(LoginRequireMixin, View):
 
 
 def bar():
-    bar_ins = Bar("我的第一个图表", "这里是副标题")
-    bar_ins.add("服装",
-            ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"], [5, 20, 36, 10, 75, 90],
-            is_more_utils=True)
+    bar_ins = Bar("未成功生成图表", "ERROR")
+    bar_ins.add("元素", [], [], is_more_utils=False)
     return bar_ins

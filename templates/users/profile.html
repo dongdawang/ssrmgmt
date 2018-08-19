@@ -89,24 +89,5 @@
                 </div>
             </div>
         </div>
-
-        <div class="jumbotron bg-warning">
-            <h2>邮箱修改</h2>
-            <form action="{% url 'users:modify-email' %}" method="post">
-                <input type="text" id="email" name="email" value=""><br>
-                <input type="text" id="code" name="code"><input type="button" value="发送验证码" onclick="send_email()"><br>
-                <p>{{ email_status }}</p>
-                <input type="submit" value="修改邮箱">
-                {% csrf_token %}
-            </form>
-        </div>
-
-{#        <div class="jumbotron bg-light">#}
-{#            <h2>用户图表</h2>#}
-{#            <div>#}
-{#                {{ myechart|safe }}#}
-{#            </div>#}
-{#        </div>#}
-
     </div>
 {% endblock %}
