@@ -200,8 +200,8 @@ class UserCharts(LoginRequireMixin, View):
         line = bar()
         # 定制图表
         if time == '最近一天':
-            # now = datetime.now()
-            now = datetime(2018, 8, 17, 0)
+            now = datetime.now()
+            # now = datetime(2018, 8, 17, 0)
             start = now - timedelta(days=1)
             stop = now
             step = timedelta(hours=1)
