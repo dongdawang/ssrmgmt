@@ -21,7 +21,7 @@ from django.conf import settings
 from django.contrib.auth.views import logout
 
 from users.views import (Index, Login, Register, Profile, ProfilePhotoUpload,
-                         ModifyPwd, ModifyEmail, SendEmailCode, UserCharts, UserAccounts)
+                         ModifyPwd, ModifyEmail, SendEmailCode, UserCharts, UserAccounts, ModifyShow)
 from goods.views import Ping
 from operation.views import CreateAccount
 # from ssrmgmt.settings import MEDIA_ROOT
@@ -37,6 +37,7 @@ users_url = [
     path('profile/send-mail', SendEmailCode.as_view(), name='send_mail'),
     path('profile/charts', UserCharts.as_view(), name='usercharts'),
     path('profile/accounts', UserAccounts.as_view(), name='accounts'),
+    path('profile/modifyshow', ModifyShow.as_view(), name='modifyshow')
 ]
 
 operation_url = [

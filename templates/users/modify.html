@@ -1,0 +1,45 @@
+{% extends 'users/userbase.html' %}
+
+{% block test %}<a href="#" class="list-group-item">个人中心</a>{% endblock %}
+
+{% block style %}
+
+{% endblock %}
+
+{# 放置用户信息目录 #}
+{% block usernav %}
+    <div class="list-group">
+        <a href="{% url 'users:profile' %}" class="list-group-item">个人信息</a>
+        <a href="{% url 'users:modify-pwd' %}" class="list-group-item">修改密码</a>
+        <a href="{% url 'users:modify-email' %}" class="list-group-item">修改邮箱</a>
+        <a href="{% url 'users:usercharts' %}" class="list-group-item">用户图表</a>
+        <a href="{% url 'users:accounts' %}" class="list-group-item">用户SSR账号</a>
+        <a href="{% url 'users:modifyshow' %}" class="list-group-item active">修改记录</a>
+    </div>
+{% endblock %}
+
+{% block usercontent %}
+    <div class="jumbotron">
+        <div class="jumbotron bg-light">
+            <h2>用户修改记录</h2>
+            <div class="alert alert-secondary alert-dismissable fade show">
+                    <div class="row">
+                        <div class="col-sm-4"><strong>修改类型</strong></div>
+                        <div class="col-sm-1"><strong></strong></div>
+                        <div class="col-sm-5"><strong>修改时间</strong></div>
+                        <div class="col-sm-1"><strong></strong></div>
+                    </div>
+                </div>
+                {% for modify in modifies %}
+                    <div class="alert alert-info alert-dismissable fade show">
+                        <div class="row">
+                            <div class="col-sm-4">{{ modify.modify_type }}</div>
+                            <div class="col-sm-1"><strong></strong></div>
+                            <div class="col-sm-5"><strong>{{ modify.add_time }}</strong></div>
+                            <div class="col-sm-1"><strong></strong></div>
+                        </div>
+                    </div>
+                {% endfor %}
+        </div>
+    </div>
+{% endblock %}
