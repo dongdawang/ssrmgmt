@@ -217,6 +217,17 @@ class UserCharts(LoginRequireMixin, View):
         return render(request, 'users/charts.html', dct)
 
 
+class ModifyShow(LoginRequireMixin, View):
+    """显示用户的修改记录"""
+    def get(self, request):
+        user = request.user
+        modifies = UserModifyRecord.objects.filter(user=user)
+        return render(request, 'users/modify.html', {'modifies': modifies})
+
+    def post(self, request):
+        pass
+
+
 class UserAccounts(LoginRequireMixin, View):
     """获取用户创建的SSR账号
     """
