@@ -7,13 +7,13 @@
         <div class="jumbotron bg-light">
             <div class="jumbotron bg-light">
                 <h2>服务器列表</h2>
-                <p>点击创建SSR账号</p>
+                <p>点击GO创建SSR账号</p>
                 <div class="alert alert-secondary alert-dismissable fade show">
                     <div class="row">
-                        <div class="col-sm-2">名称</div>
+                        <div class="col-sm-3">名称</div>
                         <div class="col-sm-2"><strong>机房</strong></div>
-                        <div class="col-sm-2"><strong>地址</strong></div>
-                        <div class="col-sm-1"><strong>延迟</strong></div>
+{#                        <div class="col-sm-2"><strong>地址</strong></div>#}
+                        <div class="col-sm-2"><strong>延迟</strong></div>
                         <div class="col-sm-1"></div>
                         <div class="col-sm-3"></div>
                     </div>
@@ -21,10 +21,10 @@
                 {% for server in servers %}
                     <div class="alert alert-info alert-dismissable fade show">
                         <div class="row">
-                            <div class="col-sm-2">{{ server.name }}</div>
+                            <div class="col-sm-3">{{ server.name }}</div>
                             <div class="col-sm-2"><strong>{{ server.address }}</strong></div>
-                            <div class="col-sm-2"><strong>{{ server.ip }}</strong></div>
-                            <div class="col-sm-1"><strong><strong id="ping">0</strong> ms</strong></div>
+{#                            <div class="col-sm-2"><strong>{{ server.ip }}</strong></div>#}
+                            <div class="col-sm-2"><strong><strong id="ping">0</strong> ms</strong></div>
                             <div class="col-sm-1"><a href="{% url 'operation:create_account' server.ip %}"
                                                      class="alert-link">GO</a></div>
                             <div class="col-sm-1">{{ server.is_enable }}</div>
