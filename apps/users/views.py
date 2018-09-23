@@ -1,4 +1,5 @@
 import functools
+import types
 from datetime import datetime, timedelta
 
 from django.contrib.auth import authenticate, login
@@ -82,6 +83,36 @@ class Profile(LoginRequireMixin, View):
         pass
 
 
+# class RecordModify:
+#     """记录每次修改个人信息的装饰器"""
+#     def __init__(self, modify_type=None):
+#         self.modify_type = modify_type
+#
+#     def __call__(self, func):
+#         class Decorator:
+#             def __init__(self, func, modify_type):
+#                 functools.wraps(func)(self)
+#                 self.modify_type = modify_type
+#
+#             def __call__(self, *args, **kwargs):
+#                 request = args[0]
+#                 modify = UserModifyRecord()
+#                 modify.user = request.user
+#                 modify.modify_type = self.modify_type
+#                 result = self.__wrapped__(*args, **kwargs)
+#                 # 需要修改操作完成之后才将修改记录保存
+#                 modify.save()
+#                 return result
+#
+#             def __get__(self, instance, owner):
+#                 if instance is None:
+#                     return self
+#                 else:
+#                     return types.MethodType(self, instance)
+#
+#         return Decorator(func, self.modify_type)
+
+
 def record_modify(modify_type=None):
     """记录每次修改个人信息的装饰器"""
     def decorator(func):
@@ -101,7 +132,6 @@ def record_modify(modify_type=None):
 class ProfilePhotoUpload(LoginRequireMixin, View):
     """用户修改头像
     """
-
     @record_modify("modify_profile_photo")
     def post(self, request):
         profile_photo_form = UploadProfilePhoto(request.POST, request.FILES, instance=request.user)
