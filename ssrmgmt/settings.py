@@ -89,8 +89,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'ssrmgmt',
         'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': '127.0.0.1',
+        'PASSWORD': '123456',
+        'HOST': 'db_mysql',
         'PORT': '3306',
         'OPTIONS': {
             # 取消外键检查
@@ -103,7 +103,7 @@ DATABASES = {
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': '127.0.0.1:6379',
+        'LOCATION': 'redis://db_redis:6379',
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
