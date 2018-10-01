@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.hashers import make_password
+from django.core.cache import cache
 
 from goods.models import SsrServer, SsrAccount
 from .forms import UploadProfilePhoto, ModifyPwdForm
@@ -38,20 +39,27 @@ class Register(View):
         return render(request, 'users/register.html', {'result': None})
 
     def post(self, request):
-        username = request.POST.get('username')
-        password = request.POST.get('password')
         email = request.POST.get('email')
+        verify_code = request.POST.get('verify_code')
+        password = request.POST.get('password')
 
-        user = UserProfile(username=username, email=email)
-        user.set_password(password)  # 通过hash和加salt的方式加密
-        user.save()  # save操作执行写入数据库的操作，之后才算注册成功
-
-        # 注册之后，判断下是否注册成功
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            return render(request, 'users/register.html', {'result': '注册成功'})
+        if email in cache:
+            verify_code_cache = cache.get(email)
         else:
-            return render(request, 'users/register.html', {'result': '注册失败'})
+            verify_code_cache = ""
+        if verify_code == verify_code_cache:
+            user = UserProfile(email=email)
+            user.set_password(password)  # 通过hash和加salt的方式加密
+            user.save()  # save操作执行写入数据库的操作，之后才算注册成功
+
+            # 注册之后，判断下是否注册成功
+            user = authenticate(username=email, password=password)
+            if user is not None:
+                return render(request, 'users/register.html', {'result': '注册成功'})
+            else:
+                return render(request, 'users/register.html', {'result': '注册失败'})
+        else:
+            return render(request, 'users/register.html', {'result': '注册失败，验证码不正确！'})
 
 
 class Login(View):
@@ -81,36 +89,6 @@ class Profile(LoginRequireMixin, View):
 
     def post(self, request):
         pass
-
-
-# class RecordModify:
-#     """记录每次修改个人信息的装饰器"""
-#     def __init__(self, modify_type=None):
-#         self.modify_type = modify_type
-#
-#     def __call__(self, func):
-#         class Decorator:
-#             def __init__(self, func, modify_type):
-#                 functools.wraps(func)(self)
-#                 self.modify_type = modify_type
-#
-#             def __call__(self, *args, **kwargs):
-#                 request = args[0]
-#                 modify = UserModifyRecord()
-#                 modify.user = request.user
-#                 modify.modify_type = self.modify_type
-#                 result = self.__wrapped__(*args, **kwargs)
-#                 # 需要修改操作完成之后才将修改记录保存
-#                 modify.save()
-#                 return result
-#
-#             def __get__(self, instance, owner):
-#                 if instance is None:
-#                     return self
-#                 else:
-#                     return types.MethodType(self, instance)
-#
-#         return Decorator(func, self.modify_type)
 
 
 def record_modify(modify_type=None):
@@ -166,17 +144,26 @@ class ModifyPwd(LoginRequireMixin, View):
             return render(request, "users/error.html", {"error": "form表单无效"})
 
 
-class SendEmailCode(LoginRequireMixin, View):
+class SendEmailCode(View):
     """发送邮箱验证码
     """
     def post(self, request):
         email = request.POST.get('email', '')
+        email_type = request.POST.get('email_type', '')
 
         if UserProfile.objects.filter(email=email):
             return render(request, "users/error.html", {"error": "邮箱已存在", "target_email": email})
         else:
-            send_type_email(email, send_type="modify_email")
-            return render(request, "users/email.html", {"status": "发送成功", "target_email": email})
+            result = send_type_email(email, send_type=email_type)
+            if result == "email_send_ok":
+                return render(request, "users/email.html", {"status": "发送成功", "target_email": email})
+            elif result == "email_resend":
+                return render(request, "users/email.html", {"status": "发送成功", "target_email": email})
+            elif result == "email_send_fail":
+                pass
+            else:
+                pass
+            return render(request, 'users/register.html', {'result': '注册成功'})
 
 
 class ModifyEmail(LoginRequireMixin, View):

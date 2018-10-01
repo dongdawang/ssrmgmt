@@ -10,6 +10,8 @@ class UserProfile(AbstractUser):
         ('male', '男'),
         ('female', '女'),
     )
+    # 重写下email字段，保证email不能重复，支持email登录
+    email = models.EmailField(_('email address'), unique=True)
     nick_name = models.CharField(max_length=20, default="", verbose_name="昵称")
     birthday = models.DateField(blank=True, null=True, verbose_name="生日")
     gender = models.CharField(max_length=6, choices=gender_choices, default='male', verbose_name="性别")
@@ -24,6 +26,11 @@ class UserProfile(AbstractUser):
 
     def __str__(self):
         return self.username
+
+    @classmethod
+    def user_count(cls):
+        """用户总数计算"""
+        return len(cls.objects.all())
 
 
 class EmailVerifyRecord(models.Model):

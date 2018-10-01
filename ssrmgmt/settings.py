@@ -48,6 +48,12 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = 'users.UserProfile'
 
+# 添加登录认证方式，实现邮箱登录
+AUTHENTICATION_BACKENDS = {
+    'django.contrib.auth.backends.ModelBackend',
+    'apps.users.backends.EmailBackend'
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -90,7 +96,7 @@ DATABASES = {
         'NAME': 'ssrmgmt',
         'USER': 'root',
         'PASSWORD': '123456',
-        'HOST': 'db_mysql',
+        'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {
             # 取消外键检查
@@ -103,7 +109,8 @@ DATABASES = {
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://db_redis:6379',
+        # 'LOCATION': 'redis://db_redis:6379',  # docker部署方式
+        'LOCATION': 'redis://localhost:6379',
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },

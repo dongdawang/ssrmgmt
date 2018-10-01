@@ -16,7 +16,7 @@ services:
     volumes:
       - ../smgrdocker/db:/var/lib/mysql
     environment:
-      - MYSQL_DATABASE=mysitedb
+      - MYSQL_DATABASE=ssrmgmt
       - MYSQL_ROOT_PASSWORD=123456
   web:
     build: .
