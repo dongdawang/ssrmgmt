@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
+from django.http import JsonResponse, HttpResponse
 from django.views import View
 from django.contrib.auth.hashers import make_password
 from django.core.cache import cache
@@ -12,7 +13,7 @@ from goods.models import SsrServer, SsrAccount
 from .forms import UploadProfilePhoto, ModifyPwdForm
 from .models import UserProfile, EmailVerifyRecord, UserModifyRecord
 from apps.utils.mixin import LoginRequireMixin
-from apps.utils.email_send import send_type_email
+from apps.utils.email_send import send_type_email, create_code
 
 from pyecharts import Bar
 from apps.utils.nets import get_host_ip_cache
@@ -48,7 +49,8 @@ class Register(View):
         else:
             verify_code_cache = ""
         if verify_code == verify_code_cache:
-            user = UserProfile(email=email)
+            # username和email都是unique，所以username必须随机一个避免重复
+            user = UserProfile(username=create_code(8), email=email)
             user.set_password(password)  # 通过hash和加salt的方式加密
             user.save()  # save操作执行写入数据库的操作，之后才算注册成功
 
@@ -152,18 +154,17 @@ class SendEmailCode(View):
         email_type = request.POST.get('email_type', '')
 
         if UserProfile.objects.filter(email=email):
-            return render(request, "users/error.html", {"error": "邮箱已存在", "target_email": email})
+            return JsonResponse({'res': 'already_existed'})
         else:
             result = send_type_email(email, send_type=email_type)
             if result == "email_send_ok":
-                return render(request, "users/email.html", {"status": "发送成功", "target_email": email})
+                return JsonResponse({'res': 'success'})
             elif result == "email_resend":
-                return render(request, "users/email.html", {"status": "发送成功", "target_email": email})
+                return JsonResponse({'res': 'resend'})
             elif result == "email_send_fail":
-                pass
+                return JsonResponse({'res': 'fail'})
             else:
-                pass
-            return render(request, 'users/register.html', {'result': '注册成功'})
+                return JsonResponse({'res': 'unknown'})
 
 
 class ModifyEmail(LoginRequireMixin, View):

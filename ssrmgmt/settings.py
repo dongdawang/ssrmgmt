@@ -27,7 +27,7 @@ sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 SECRET_KEY = 'oa-70f*fdrfz&$_9k8!tk(!nfw_y*j7fs&t=090$pte3c1df#9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -50,8 +50,8 @@ AUTH_USER_MODEL = 'users.UserProfile'
 
 # 添加登录认证方式，实现邮箱登录
 AUTHENTICATION_BACKENDS = {
-    'django.contrib.auth.backends.ModelBackend',
-    'apps.users.backends.EmailBackend'
+    # 'django.contrib.auth.backends.ModelBackend',
+    'apps.users.backends.CustomBackend'
 }
 
 MIDDLEWARE = [
@@ -152,10 +152,10 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, "mystatic")
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, "static"),
-# ]
+# STATIC_ROOT = os.path.join(BASE_DIR, "mystatic")
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
