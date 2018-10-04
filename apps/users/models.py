@@ -3,7 +3,10 @@ from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
+from django.core.validators import MaxValueValidator, MinValueValidator
 # from goods.models import SsrAccount
+
+import markdown
 
 
 class UserProfile(AbstractUser):
@@ -21,6 +24,12 @@ class UserProfile(AbstractUser):
     profile_photo = models.ImageField(
         max_length=100, upload_to='image/%Y/%m',  default='image/default.png', verbose_name="用户头像")
 
+    # 业务相关属性
+    coin_nums = models.DecimalField(verbose_name="硬币数", decimal_places=2, max_digits=10,
+                                    default=10, editable=True, null=True, blank=True)
+    experience = models.PositiveIntegerField(verbose_name="经验", default=0, help_text="用于计算用户等级",
+                                             validators=[MaxValueValidator(100), MinValueValidator(0)])
+
     class Meta:
         verbose_name = "用户信息"
         verbose_name_plural = verbose_name
@@ -32,6 +41,22 @@ class UserProfile(AbstractUser):
     def user_count(cls):
         """用户总数计算"""
         return len(cls.objects.all())
+
+    def user_level(self):
+        """获取用户的等级"""
+        # 等级区间
+        levels = {
+            0: [0, 10],
+            1: [10, 50],
+            2: [50, 200],
+            3: [200, 500],
+            4: [500, 1000],
+            5: [1000, float('inf')]
+        }
+        for k, v in levels:
+            if v[0] <= self.experience < v[1]:
+                return k
+        return 0
 
 
 class EmailVerifyRecord(models.Model):
@@ -79,3 +104,26 @@ class UserModifyRecord(models.Model):
     class Meta:
         verbose_name = "账号修改记录"
         verbose_name_plural = verbose_name
+
+
+class Announcement(models.Model):
+    """公告界面"""
+    time = models.DateTimeField('时间', auto_now_add=True)
+    body = models.TextField('主体')
+
+    def __str__(self):
+        return '日期:{}'.format(str(self.time)[:9])
+
+    # 重写save函数，将文本渲染成markdown格式存入数据库
+    def save(self, *args, **kwargs):
+        # 首先实例化一个MarkDown类，来渲染一下body的文本 成为html文本
+        md = markdown.Markdown(extensions=[
+            'markdown.extensions.extra',
+        ])
+        self.body = md.convert(self.body)
+        # 调动父类save 将数据保存到数据库中
+        super(Announcement, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name_plural = '系统公告'
+        ordering = ('-time', )
