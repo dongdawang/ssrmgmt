@@ -36,7 +36,7 @@
                             <button type="button" class="close" data-dismiss="alert">&times;</button>
                             <strong id="result"></strong> {{ result }}
                         </div>
-                        {% if result != None%}
+                        {% if result != None %}
                             {% if result == '注册成功' %}
                                 <div class="alert alert-success alert-dismissable">
                                     <button type="button" class="close" data-dismiss="alert">x</button>
@@ -90,7 +90,7 @@
                         $('#status').attr("class", "alert alert-warning alert-dismissable");
                         $('#status').text("请稍后再试");
                         $('#result').text("未知！");
-                    }else if (data.res === 'already_existed') {
+                    } else if (data.res === 'already_existed') {
                         $('#status').attr("class", "alert alert-warning alert-dismissable");
                         $('#status').text("邮箱已经存在");
                         $('#result').text("未知！");

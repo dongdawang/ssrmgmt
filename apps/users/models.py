@@ -3,10 +3,12 @@ from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 from django.core.validators import MaxValueValidator, MinValueValidator
 # from goods.models import SsrAccount
 
 import markdown
+from apps.utils.constants import METHOD_CHOICES, PROTOCOL_CHOICES, OBFS_CHOICES
 
 
 class UserProfile(AbstractUser):
@@ -29,6 +31,12 @@ class UserProfile(AbstractUser):
                                     default=10, editable=True, null=True, blank=True)
     experience = models.PositiveIntegerField(verbose_name="经验", default=0, help_text="用于计算用户等级",
                                              validators=[MaxValueValidator(100), MinValueValidator(0)])
+
+    # SSR相关属性
+    ssr_expiration_time = models.DateTimeField(verbose_name='SSR有效期', default=timezone.now)
+    ssr_method = models.CharField(verbose_name="加密方法", max_length=30, choices=METHOD_CHOICES, null=True)
+    ssr_protocol = models.CharField(verbose_name="协议", max_length=30, choices=PROTOCOL_CHOICES, null=True)
+    ssr_obfs = models.CharField(verbose_name="混淆方法", max_length=30, choices=OBFS_CHOICES, null=True)
 
     class Meta:
         verbose_name = "用户信息"

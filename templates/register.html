@@ -1,0 +1,137 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="Dashboard">
+    <meta name="keyword" content="Dashboard, Bootstrap, Admin, Template, Theme, Responsive, Fluid, Retina">
+    <title>SSRMGMT-注册</title>
+
+    <!-- Favicons -->
+    <link href="{% static "img/favicon.png" %}" rel="icon">
+    <link href="{% static "img/apple-touch-icon.png" %}" rel="apple-touch-icon">
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static "lib/bootstrap/css/bootstrap.min.css" %}" rel="stylesheet">
+    <!--external css-->
+    <link href="{% static "lib/font-awesome/css/font-awesome.css" %}" rel="stylesheet"/>
+    <!-- Custom styles for this template -->
+    <link href="{% static "css/style.css" %}" rel="stylesheet">
+    <link href="{% static "css/style-responsive.css" %}" rel="stylesheet">
+</head>
+
+<body>
+<!-- **********************************************************************************************************************************************************
+    MAIN CONTENT
+    *********************************************************************************************************************************************************** -->
+<div id="login-page">
+    <div class="container">
+        <form class="form-login" action="{% url 'users:register' %}" method="post">
+            <h2 class="form-login-heading">注册</h2>
+            <!--表明这个表单是注册用的-->
+            <input type="hidden" value="register" id="email_type">
+            <div class="login-wrap">
+                <input type="text" class="form-control" placeholder="Email"
+                       name="email" value="" id="email" autofocus>
+                <br>
+                <!--<button class="btn btn-theme btn-send">-->
+                <div class="form-inline">
+                    <input type="text" class="form-control" id="verify_code" name="verify_code" value=""
+                           placeholder="Verify Code">
+                    <div class="input-group-append">
+                        <button class="btn btn-secondary left-side" type="button" id="send_mail">获取验证码</button>
+                    </div>
+                </div>
+                <br>
+                <input type="password" class="form-control" placeholder="Password" name="password" value="">
+                <br>
+                <button class="btn btn-theme btn-block" type="submit"><i class="fa fa-lock"></i> 注册
+                </button>
+                <br>
+                <div class="alert alert-success hidden" id="status">
+                    <button type="button" class="close" data-dismiss="alert">x</button>
+                    <strong id="result"></strong>
+                </div>
+                {% if result != None %}
+                    {% if result == '注册成功' %}
+                        <div class="alert alert-success alert-dismissable">
+                            <button type="button" class="close" data-dismiss="alert">x</button>
+                            <strong>成功!</strong> {{ result }}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning alert-dismissable">
+                            <button type="button" class="close" data-dismiss="alert">x</button>
+                            <strong>失败!</strong> {{ result }}
+                        </div>
+                    {% endif %}
+                {% endif %}
+                <hr>
+                <div class="registration">
+                    已经有账号?<br/>
+                    <a class="" href="{% url 'users:login' %}">
+                        现在登录
+                    </a>
+                </div>
+            </div>
+            {% csrf_token %}
+        </form>
+    </div>
+</div>
+<!-- js placed at the end of the document so the pages load faster -->
+<script src="{% static "lib/jquery/jquery.min.js" %}"></script>
+<script src="{% static "lib/bootstrap/js/bootstrap.min.js" %}"></script>
+<!--BACKSTRETCH-->
+<!-- You can use an image of whatever size. This script will stretch to fit in any screen size.-->
+<script type="text/javascript" src="{% static "lib/jquery.backstretch.min.js" %}"></script>
+<script>
+    $.backstretch("{% static "img/bg-register.jpg" %}", {
+        speed: 500
+    });
+</script>
+<script>
+    $(function () {
+        $('#send_mail').click(function () {
+            csrf = $("input[name='csrfmiddlewaretoken']").val();
+            email = $('#email').val();
+            email_type = $('#email_type').val();
+            alert(csrf + email + email_type)
+            //发起ajax请求，注意csrf攻击
+            $.post("{% url 'users:send_mail' %}", {
+                'csrfmiddlewaretoken': csrf,
+                'email': email,
+                'email_type': email_type
+            }, function (data) {
+                //获取返回的数据并进行操作
+                if (data.res === 'success') {
+                    //邮箱验证码发送成功
+                    $('#status').attr("class", "alert alert-success alert-dismissable");
+                    $('#status').text("发送成功");
+                    $('#status').attr('class').removeTag("hidden");
+                    $('#result').text("成功！");
+                } else if (data.res === 'resend') {
+                    $('#status').attr("class", "alert alert-warning alert-dismissable");
+                    $('#status').text("请勿重复发送");
+                    $('#result').text("警告！");
+                } else if (data.res === 'fail') {
+                    $('#status').attr("class", "alert alert-warning alert-dismissable");
+                    $('#status').text("验证码发送失败");
+                    $('#result').text("失败！");
+                } else if (data.res === 'unknown') {
+                    $('#status').attr("class", "alert alert-warning alert-dismissable");
+                    $('#status').text("请稍后再试");
+                    $('#result').text("未知！");
+                } else if (data.res === 'already_existed') {
+                    $('#status').attr("class", "alert alert-warning alert-dismissable");
+                    $('#status').text("邮箱已经存在");
+                    $('#result').text("未知！");
+                }
+            })
+        });
+    });
+</script>
+</body>
+
+</html>

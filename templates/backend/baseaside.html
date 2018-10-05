@@ -1,0 +1,109 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+{% block head %}
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="Dashboard">
+        <meta name="keyword" content="Dashboard, Bootstrap, Admin, Template, Theme, Responsive, Fluid, Retina">
+        <title>Dashio - Bootstrap Admin Template</title>
+
+        <!-- Favicons -->
+        <link href="img/favicon.png" rel="icon">
+        <link href="img/apple-touch-icon.png" rel="apple-touch-icon">
+
+        <!-- Bootstrap core CSS -->
+        <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <!--external css-->
+        <link href="lib/font-awesome/css/font-awesome.css" rel="stylesheet"/>
+        <!-- Custom styles for this template -->
+        <link href="css/style.css" rel="stylesheet">
+        <link href="css/style-responsive.css" rel="stylesheet">
+
+        <!-- =======================================================
+          Template Name: Dashio
+          Template URL: https://templatemag.com/dashio-bootstrap-admin-template/
+          Author: TemplateMag.com
+          License: https://templatemag.com/license/
+        ======================================================= -->
+    </head>
+{% endblock %}
+
+{% block aside %}
+    <aside>
+        <div id="sidebar" class="nav-collapse ">
+            <!-- sidebar menu start-->
+            <ul class="sidebar-menu" id="nav-accordion">
+                <p class="centered"><a href="profile.html"><img src="img/ui-sam.jpg" class="img-circle" width="80"></a>
+                </p>
+                <h5 class="centered">DONG</h5>
+                <li class="mt">
+                    <a class="active" href="index.html">
+                        <i class="fa fa-dashboard"></i>
+                        <span>系统</span>
+                    </a>
+                </li>
+                <li class="sub-menu">
+                    <a href="javascript:;">
+                        <i class="fa fa-desktop"></i>
+                        <span>我的</span>
+                    </a>
+                    <ul class="sub">
+                        <li><a href="general.html">用户中心</a></li>
+                        <li><a href="buttons.html">账户资料</a></li>
+                        <li><a href="panels.html">资料编辑</a></li>
+                        <li><a href="font_awesome.html">提交工单</a></li>
+                    </ul>
+                </li>
+                <li class="sub-menu">
+                    <a href="javascript:;">
+                        <i class="fa fa-cogs"></i>
+                        <span>硬币</span>
+                    </a>
+                    <ul class="sub">
+                        <li><a href="grids.html">答题赚取硬币</a></li>
+                        <li><a href="calendar.html">邀请赚取硬币</a></li>
+                    </ul>
+                </li>
+                <li class="sub-menu">
+                    <a href="javascript:;">
+                        <i class="fa fa-book"></i>
+                        <span>购买</span>
+                    </a>
+                    <ul class="sub">
+                        <li><a href="blank.html">购买时长</a></li>
+                        <li><a href="login.html">购买记录</a></li>
+                    </ul>
+                </li>
+                <li class="sub-menu">
+                    <a href="javascript:;">
+                        <i class="fa fa-tasks"></i>
+                        <span>使用</span>
+                    </a>
+                    <ul class="sub">
+                        <li><a href="form_component.html">节点列表</a></li>
+                        <li><a href="advanced_form_components.html">使用教程</a></li>
+                        <li><a href="form_validation.html">修改节点</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <!-- sidebar menu end-->
+        </div>
+    </aside>
+{% endblock %}
+
+{% block footer %}
+    <footer class="site-footer">
+        <div class="text-center">
+            <p>
+                &copy; powered by <strong>django</strong>.
+            </p>
+            <a href="index.html#" class="go-top">
+                <i class="fa fa-angle-up"></i>
+            </a>
+        </div>
+    </footer>
+{% endblock %}

@@ -28,7 +28,7 @@ class Index(View):
             'servers': servers,
             'ip': get_host_ip_cache(),
         }
-        return render(request, 'index.html', data)
+        return render(request, 'backend/system/system.html', data)
 
 
 class Register(View):
@@ -37,7 +37,7 @@ class Register(View):
     post:收到request，然后解析其中的注册数据，完成注册，返回注册结果
     """
     def get(self, request):
-        return render(request, 'users/register.html', {'result': None})
+        return render(request, 'register.html', {'result': None})
 
     def post(self, request):
         email = request.POST.get('email')
@@ -57,17 +57,17 @@ class Register(View):
             # 注册之后，判断下是否注册成功
             user = authenticate(username=email, password=password)
             if user is not None:
-                return render(request, 'users/register.html', {'result': '注册成功'})
+                return render(request, 'register.html', {'result': '注册成功'})
             else:
-                return render(request, 'users/register.html', {'result': '注册失败'})
+                return render(request, 'register.html', {'result': '注册失败'})
         else:
-            return render(request, 'users/register.html', {'result': '注册失败，验证码不正确！'})
+            return render(request, 'register.html', {'result': '注册失败，验证码不正确！'})
 
 
 class Login(View):
 
     def get(self, request):
-        return render(request, 'users/login.html', {})
+        return render(request, 'login.html', {})
 
     def post(self, request):
         username = request.POST.get('username')
@@ -78,16 +78,16 @@ class Login(View):
             login(request, user)
             return redirect('/')
         else:
-            return render(request, 'users/login.html', {'result': '登录失败'})
+            return render(request, 'login.html', {'result': '登录失败'})
 
 
 class Profile(LoginRequireMixin, View):
     def get(self, request):
         user = request.user
         if user is not None:
-            return render(request, 'users/profile.html', {})
+            return render(request, 'backend/my/profile.html', {})
         else:
-            return render(request, 'users/error.html', {"error": '请登录后再操作'})
+            return render(request, 'backend/my/profile.html', {"error": '请登录后再操作'})
 
     def post(self, request):
         pass
