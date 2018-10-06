@@ -37,6 +37,7 @@ class UserProfile(AbstractUser):
     ssr_method = models.CharField(verbose_name="加密方法", max_length=30, choices=METHOD_CHOICES, null=True)
     ssr_protocol = models.CharField(verbose_name="协议", max_length=30, choices=PROTOCOL_CHOICES, null=True)
     ssr_obfs = models.CharField(verbose_name="混淆方法", max_length=30, choices=OBFS_CHOICES, null=True)
+    ssr_obfs_enable = models.BooleanField(verbose_name="是否启用混淆", default=False)
 
     class Meta:
         verbose_name = "用户信息"

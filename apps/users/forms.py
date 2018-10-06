@@ -12,3 +12,20 @@ class ModifyPwdForm(forms.Form):
     password1 = forms.CharField(required=True, min_length=5)
     password2 = forms.CharField(required=True, min_length=5)
 
+
+class ModifyGeneralForm(forms.Form):
+    gender = forms.CharField(required=True, min_length=6)
+    birthday = forms.DateField(required=False, input_formats=['%Y-%m-%d'])
+    address = forms.CharField(required=False, max_length=100)
+    mobile = forms.CharField(required=False, max_length=11)
+
+
+class ModifyUsernameForm(forms.Form):
+    username = forms.CharField(required=True, max_length=150)
+
+
+class ModifySSRForm(forms.Form):
+    method = forms.CharField(required=False, max_length=30)
+    protocol = forms.CharField(required=False, max_length=30)
+    obfs = forms.CharField(required=False, max_length=30)
+    obfs_enable = forms.BooleanField(required=False)

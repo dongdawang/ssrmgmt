@@ -22,7 +22,8 @@ from django.contrib.auth.views import logout
 
 from users.views import (Index, Login, Register, Profile, ProfilePhotoUpload,
                          ModifyPwd, ModifyEmail, SendEmailCode, UserCharts, UserAccounts,
-                         ModifyShow, AccountEdit)
+                         ModifyShow, AccountEdit, AccountProfilePhotoModify, AccountPwdModify,
+                         AccountGeneralModify, AccountNameModify, AccountSSRModify, AccountEmailModify)
 from goods.views import Ping
 from operation.views import CreateAccount
 # from ssrmgmt.settings import MEDIA_ROOT
@@ -33,13 +34,18 @@ users_url = [
     path('register/', Register.as_view(), name='register'),
     path('profile/', Profile.as_view(), name='profile'),
     path('profile/profile-photo', ProfilePhotoUpload.as_view(), name='profile-photo'),
-    path('profile/modify-pwd', ModifyPwd.as_view(), name='modify-pwd'),
     path('profile/modify-email', ModifyEmail.as_view(), name='modify-email'),
     path('profile/send-mail', SendEmailCode.as_view(), name='send_mail'),
     path('profile/charts', UserCharts.as_view(), name='usercharts'),
     path('profile/accounts', UserAccounts.as_view(), name='accounts'),
     path('profile/modifyshow', ModifyShow.as_view(), name='modifyshow'),
     path('profile/account_edit', AccountEdit.as_view(), name='account_edit'),
+    path('account/profile_photo_modify', AccountProfilePhotoModify.as_view(), name="photo_modify"),
+    path('account/modify-pwd', AccountPwdModify.as_view(), name='modify-pwd'),
+    path('account/modify-general', AccountGeneralModify.as_view(), name='modify-general'),
+    path('account/modify-username', AccountNameModify.as_view(), name='modify-username'),
+    path('account/modify-ssr', AccountSSRModify.as_view(), name='modify-ssr'),
+    path('account/modify-email', AccountEmailModify.as_view(), name='modify-email'),
 ]
 
 operation_url = [

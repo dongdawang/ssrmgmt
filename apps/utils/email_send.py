@@ -25,12 +25,12 @@ def send_type_email(email, send_type='register'):
         if key in cache:
             return "email_resend"
         else:
-            email_title = "SSRMGMT注册邮箱验证码"
+            email_title = "SSRMGMT修改邮箱验证码"
             email_body = "验证码:{0}，有效时间15分钟".format(verify_code)
             status = send_mail(email_title, email_body, settings.EMAIL_FROM, [email])
             if status:
                 # 发送成功就把验证码存入redis，有效时间
-                cache.set(key, verify_code, 60 * 15)
+                cache.set(key, verify_code, 60 * 60 * 15)
                 return "email_send_ok"
             else:
                 return "email_send_fail"

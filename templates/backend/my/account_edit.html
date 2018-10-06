@@ -9,6 +9,31 @@
     <link rel="stylesheet" type="text/css" href="{% static "lib/bootstrap-daterangepicker/daterangepicker.css" %}"/>
     <link rel="stylesheet" type="text/css" href="{% static "lib/bootstrap-timepicker/compiled/timepicker.css" %}"/>
     <link rel="stylesheet" type="text/css" href="{% static "lib/bootstrap-datetimepicker/datertimepicker.css" %}"/>
+    <script src="{% static "lib/jquery/jquery.min.js" %}"></script>
+    <script src="{% static "lib/bootstrap/js/bootstrap.min.js" %}"></script>
+    <!--BACKSTRETCH-->
+    <!-- You can use an image of whatever size. This script will stretch to fit in any screen size.-->
+    <script type="text/javascript" src="{% static "lib/jquery.backstretch.min.js" %}"></script>
+    <script>
+        // 修改密码
+        $("#modify_pwd").bind("click", function () {
+            var params = {
+                "password1": $("#password1").val(),
+                "password2": $("#password2").val(),
+                "csrfmiddlewaretoken": {{ csrf_token }}
+            };
+            alert("sdlahfjskajlk");
+            $.ajax({
+                type: "post",
+                url: "{% url 'users:modify-pwd' %}",
+                data: params,
+                dataType: "json",
+                success: function (respMsg) {
+                    alert(respMsg.res);
+                }
+            });
+        });
+    </script>
 {% endblock %}
 
 {% block main_content %}
@@ -20,7 +45,7 @@
                     <!-- 修改头像 -->
                     <div class="showback">
                         <h4><i class="fa fa-angle-right"></i> 修改头像</h4>
-                        <form action="#" class="form-horizontal style-form">
+                        <form class="form-horizontal style-form" enctype="multipart/form-data">
                             <div class="form-group last">
                                 <div class="col-md-10 col-md-offset-2">
                                     <div class="fileupload fileupload-new" data-provides="fileupload">
@@ -34,12 +59,8 @@
                                         <span class="btn btn-theme02 btn-file">
                                         <span class="fileupload-new"><i class="fa fa-paperclip"></i> Select image</span>
                                         <span class="fileupload-exists"><i class="fa fa-undo"></i> Change</span>
-                                        <input type="file" class="default"/>
+                                        <input type="file" class="default" id="profile-photo"/>
                                         </span>
-                                            <a href="advanced_form_components.html#"
-                                               class="btn btn-theme04 fileupload-exists"
-                                               data-dismiss="fileupload"><i
-                                                    class="fa fa-trash-o"></i> Remove</a>
                                         </div>
                                     </div>
                                     <span class="label label-info">NOTE!</span>
@@ -50,48 +71,51 @@
                             </div>
                             <div class="form-group">
                                 <div class="col-lg-offset-2 col-lg-10">
-                                    <button class="btn btn-theme" type="submit">Save</button>
-                                    <button class="btn btn-theme04" type="button">Cancel</button>
+                                    <button class="btn btn-theme" type="button" id="modify_photo">确认修改</button>
                                 </div>
                             </div>
+                            {% csrf_token %}
                         </form>
                     </div>
                     <!-- 修改密码 -->
                     <div class="showback">
                         <h4><i class="fa fa-angle-right"></i> 修改密码</h4>
-                        <form class="cmxform form-horizontal style-form" id="signupForm" method="get" action="">
+                        <form class="cmxform form-horizontal style-form">
                             <div class="form-group ">
-                                <label for="password" class="control-label col-lg-2">新密码</label>
+                                <label for="password1" class="control-label col-lg-2">新密码</label>
                                 <div class="col-lg-10">
-                                    <input class="form-control " id="password" name="password" type="password"/>
+                                    <input class="form-control " id="password1" name="password" type="password"/>
                                 </div>
                             </div>
                             <div class="form-group ">
-                                <label for="confirm_password" class="control-label col-lg-2">确认密码</label>
+                                <label for="password2" class="control-label col-lg-2">确认密码</label>
                                 <div class="col-lg-10">
-                                    <input class="form-control " id="confirm_password" name="confirm_password"
+                                    <input class="form-control " id="password2" name="confirm_password"
                                            type="password"/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-lg-offset-2 col-lg-10">
-                                    <button class="btn btn-theme" type="submit">确认修改</button>
+                                    <button class="btn btn-theme" type="button" id="modifypwd">确认修改</button>
                                 </div>
                             </div>
+                            {% csrf_token %}
                         </form>
                     </div>
                     <!-- 一般信息修改 -->
                     <div class="showback">
                         <h4><i class="fa fa-angle-right"></i>一般信息修改</h4>
-                        <form class="cmxform form-horizontal style-form" method="get" action="">
+                        <form class="cmxform form-horizontal style-form">
                             <div class="form-group">
                                 <label class="col-sm-2 col-sm-2 control-label">性别</label>
                                 <div class="col-sm-10">
                                     <div class="radio">
                                         <label>
                                             {% if request.user.gender == 'male' %}
-                                                <input type="radio" name="gender" id="gender" value="option1"
-                                                   checked>
+                                                <input type="radio" name="radio" id="gender" value="male"
+                                                       checked>
+                                            {% else %}
+                                                <input type="radio" name="radio" id="gender" value="male">
                                             {% endif %}
                                             男
                                         </label>
@@ -99,8 +123,10 @@
                                     <div class="radio">
                                         <label>
                                             {% if request.user.gender == 'female' %}
-                                                <input type="radio" name="gender" id="gender" value="option1"
-                                                   checked>
+                                                <input type="radio" name="radio" id="gender" value="female"
+                                                       checked>
+                                            {% else %}
+                                                <input type="radio" name="radio" id="gender" value="female">
                                             {% endif %}
                                             女
                                         </label>
@@ -110,15 +136,16 @@
                             <div class="form-group ">
                                 <label for="birthday" class="control-label col-lg-2">生日</label>
                                 <div class="col-md-3 col-xs-11">
-                                    <div data-date-viewmode="years" data-date-format="dd-mm-yyyy"
+                                    <div data-date-viewmode="years" data-date-format="yyyy-mm-dd"
                                          data-date="01-01-2014"
                                          class="input-append date dpYears">
                                         {% if request.user.birthday is None %}
                                             <input type="text" readonly="" id="birthday" value="" size="16"
-                                               class="form-control">
+                                                   class="form-control">
                                         {% else %}
-                                            <input type="text" readonly="" id="birthday" value="{{ request.user.birthday|date:"d-m-Y" }}" size="16"
-                                               class="form-control">
+                                            <input type="text" readonly="" id="birthday"
+                                                   value="{{ request.user.birthday|date:"Y-m-d" }}" size="16"
+                                                   class="form-control">
                                         {% endif %}
                                         <span class="input-group-btn add-on">
                                         <button class="btn btn-theme" type="button"><i
@@ -144,17 +171,19 @@
                             </div>
                             <div class="form-group">
                                 <div class="col-lg-offset-2 col-lg-10">
-                                    <button class="btn btn-theme" type="submit">确认修改</button>
+                                    <button class="btn btn-theme" type="button" id="modifygeneral">确认修改</button>
                                 </div>
                             </div>
+                            {% csrf_token %}
                         </form>
                     </div>
                 </div>
                 <!-- /col-lg-6 -->
                 <div class="col-lg-6 col-md-6 col-sm-12">
+                    <!-- 修改用户名 -->
                     <div class="showback">
                         <h4><i class="fa fa-angle-right"></i> 修改用户名</h4>
-                        <form class="cmxform form-horizontal style-form" method="get" action="">
+                        <form class="cmxform form-horizontal style-form">
                             <div class="form-group">
                                 <label class="col-sm-2 col-sm-2 control-label">当前用户名</label>
                                 <div class="col-sm-10">
@@ -170,18 +199,20 @@
                             </div>
                             <div class="form-group">
                                 <div class="col-lg-offset-2 col-lg-10">
-                                    <button class="btn btn-theme" type="submit">确认修改</button>
+                                    <button class="btn btn-theme" type="button" id="modify_username">确认修改</button>
                                 </div>
                             </div>
+                            {% csrf_token %}
                         </form>
                     </div>
-                    <!--  MODALS -->
+                    <!-- 修改邮箱 -->
                     <div class="showback">
                         <h4><i class="fa fa-angle-right"></i> 修改邮箱</h4>
                         <!-- Button trigger modal -->
-                        <form class="cmxform form-horizontal style-form" method="get" action="">
+                        <form class="cmxform form-horizontal style-form">
+                            <input type="hidden" value="modify_email" id="email_type">
                             <div class="form-group ">
-                                <label for="email" class="control-label col-lg-2">当前邮箱</label>
+                                <label class="control-label col-lg-2">当前邮箱</label>
                                 <div class="col-lg-10">
                                     <input class="form-control " type="email" placeholder="{{ request.user.email }}"
                                            disabled/>
@@ -199,19 +230,21 @@
                                     <input class="form-control" id="verify" name="email" type="text"/>
                                 </div>
                                 <div class="col-lg-4">
-                                    <button class="btn btn-theme" type="submit">获取验证码</button>
+                                    <button class="btn btn-theme" type="button" id="send_email">获取验证码</button>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-lg-offset-2 col-lg-10">
-                                    <button class="btn btn-theme" type="submit">确认修改</button>
+                                    <button class="btn btn-theme" type="button" id="modify_email">确认修改</button>
                                 </div>
                             </div>
+                            {% csrf_token %}
                         </form>
                     </div>
+                    <!-- 修改SSR配置-->
                     <div class="showback">
                         <h4><i class="fa fa-angle-right"></i> 修改SSR账号信息</h4>
-                        <form class="cmxform form-horizontal style-form" method="get" action="">
+                        <form class="cmxform form-horizontal style-form">
                             <div class="form-group">
                                 <label for="method" class="control-label col-lg-2">加密方法</label>
                                 <!-- Button trigger modal -->
@@ -254,16 +287,22 @@
                                 <div class="col-lg-10">
                                     <div class="switch switch-square" data-on-label="<i class=' fa fa-check'></i>"
                                          data-off-label="<i class='fa fa-times'></i>">
-                                        <input type="checkbox" id="obfs_enable" checked="false" name="obfs_enable"/>
+                                        {% if request.user.ssr_obfs_enable %}
+                                            <input type="checkbox" id="obfs_enable" name="obfs_enable" checked/>
+                                        {% else %}
+                                            <input type="checkbox" id="obfs_enable" name="obfs_enable"/>
+                                        {% endif %}
+
                                     </div>
                                     <!--<input type="checkbox"   data-toggle="switch" />-->
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-lg-offset-2 col-lg-10">
-                                    <button class="btn btn-theme" type="submit">确认修改</button>
+                                    <button class="btn btn-theme" type="button" id="modify_ssr">确认修改</button>
                                 </div>
                             </div>
+                            {% csrf_token %}
                         </form>
                     </div>
                 </div>
@@ -275,6 +314,173 @@
 {% endblock %}
 
 {% block otherscript %}
+    //修改用户头像
+    <script>
+        $(function () {
+            $('#modify_photo').click(function () {
+                var fileobj = $("#profile-photo")[0].files[0];
+                var form = new FormData();
+                form.append("profile_photo", fileobj);
+                form.append("csrfmiddlewaretoken", '{{ csrf_token }}');
+
+                //发起ajax请求，注意csrf攻击
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'users:photo_modify' %}",
+                    data: form,
+                    processData: false, //告诉jquery要传输data对象
+                    contentType: false, //告诉jquery不需要增加请求头对于contentType的设置
+                    success: function (data) {
+                        alert(data.res);
+                    }
+                })
+            });
+        });
+    </script>
+    <script>
+        $(function () {
+            //修改账号密码
+            $('#modifypwd').click(function () {
+                csrf = '{{ csrf_token }}';
+                password1 = $('#password1').val();
+                password2 = $('#password2').val();
+                //发起ajax请求，注意csrf攻击
+                $.post("{% url 'users:modify-pwd' %}", {
+                    'csrfmiddlewaretoken': csrf,
+                    'password1': password1,
+                    'password2': password2
+                }, function (data) {
+                    //获取返回的数据并进行操作
+                    alert(data.res);
+                })
+            });
+        });
+    </script>
+    <script>
+        $(function () {
+            //修改一般信息
+            $('#modifygeneral').click(function () {
+                gender = 'male';
+                var radio_tag = document.getElementsByName('radio');
+                for (var i = 0; i < radio_tag.length; i++) {
+                    if (radio_tag[i].checked) {
+                        gender = radio_tag[i].value;
+                    }
+                }
+                csrf = '{{ csrf_token }}';
+
+                birthday = $('#birthday').val();
+                address = $('#address').val();
+                mobile = $('#mobile').val();
+                //发起ajax请求，注意csrf攻击
+                $.post("{% url 'users:modify-general' %}", {
+                    'csrfmiddlewaretoken': csrf,
+                    'gender': gender,
+                    'birthday': birthday,
+                    'address': address,
+                    'mobile': mobile
+                }, function (data) {
+                    //获取返回的数据并进行操作
+                    alert(data.res);
+                })
+            });
+        });
+    </script>
+    <script>
+        $(function () {
+            //修改一般信息
+            $('#modify_username').click(function () {
+                csrf = '{{ csrf_token }}';
+                username = $('#username').val();
+                //发起ajax请求，注意csrf攻击
+                $.post("{% url 'users:modify-username' %}", {
+                    'csrfmiddlewaretoken': csrf,
+                    'username': username
+                }, function (data) {
+                    //获取返回的数据并进行操作
+                    alert(data.res);
+                })
+            });
+        });
+    </script>
+    //修改SSR账号
+    <script>
+        $(function () {
+            //修改一般信息
+            $('#modify_ssr').click(function () {
+                var obfs_ck = document.getElementById('obfs_enable');
+                var obfs_enable = false;
+                if (obfs_ck.checked) {
+                    obfs_enable = true;
+                }
+                csrf = '{{ csrf_token }}';
+                method = $('#method').val();
+                protocol = $('#protocol').val();
+                obfs = $('#obfs').val();
+                alert(method + protocol + obfs + obfs_enable);
+                //发起ajax请求，注意csrf攻击
+                $.post("{% url 'users:modify-ssr' %}", {
+                    'csrfmiddlewaretoken': csrf,
+                    'method': method,
+                    'protocol': method,
+                    'obfs': obfs,
+                    'obfs_enable': obfs_enable
+                }, function (data) {
+                    //获取返回的数据并进行操作
+                    alert(data.res);
+                })
+            });
+        });
+    </script>
+    //发送验证码
+    <script>
+        $(function () {
+            $('#send_email').click(function () {
+                email = $('#email').val();
+                email_type = $('#email_type').val();
+                alert(email + email_type);
+                //发起ajax请求，注意csrf攻击
+                $.post("{% url 'users:send_mail' %}", {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                    'email': email,
+                    'email_type': email_type
+                }, function (data) {
+                    //获取返回的数据并进行操作
+                    if (data.res === 'success') {
+                        //邮箱验证码发送成功
+                        alert("验证码发送成功！");
+                    } else if (data.res === 'resend') {
+                        alert("当前邮箱已经发送了验证码!");
+                    } else if (data.res === 'fail') {
+                        alert("验证码发送失败！");
+                    } else if (data.res === 'unknown') {
+                        alert("发送验证码失败！");
+                    } else if (data.res === 'already_existed') {
+                        alert("邮箱已经被注册！");
+                    }
+                })
+            });
+        });
+    </script>
+    //修改邮箱
+    <script>
+        $(function () {
+            $('#modify_email').click(function () {
+                email = $('#email').val();
+                verify_code = $('#verify').val();
+                alert(email);
+                //发起ajax请求，注意csrf攻击
+                $.post("{% url 'users:modify-email' %}", {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                    'email': email,
+                    'verify_code': verify_code
+                }, function (data) {
+                    //获取返回的数据并进行操作
+                    alert(data.res);
+                })
+            });
+        });
+    </script>
     <script src="{% static "lib/common-scripts.js" %}"></script>
     <!--script for this page-->
     <script src="{% static "lib/jquery-ui-1.9.2.custom.min.js" %}"></script>
