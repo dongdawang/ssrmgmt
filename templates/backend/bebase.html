@@ -24,6 +24,7 @@
     <link href="{% static "css/style.css" %}" rel="stylesheet">
     <link href="{% static "css/style-responsive.css" %}" rel="stylesheet">
     <script src="{% static "lib/chart-master/Chart.js" %}"></script>
+    {% block other_link %}{% endblock %}
 </head>
 
 <body>
@@ -260,7 +261,7 @@
                     <ul class="sub">
                         <li><a href="{% url 'users:profile' %}">用户中心</a></li>
                         <li><a href="buttons.html">账户资料</a></li>
-                        <li><a href="panels.html">资料编辑</a></li>
+                        <li><a href="{% url 'users:account_edit' %}">资料编辑</a></li>
                         <li><a href="font_awesome.html">提交工单</a></li>
                     </ul>
                 </li>

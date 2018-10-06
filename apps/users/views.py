@@ -18,6 +18,7 @@ from apps.utils.email_send import send_type_email, create_code
 from pyecharts import Bar
 from apps.utils.nets import get_host_ip_cache
 from apps.utils.charts import brand_usage, get_brand_usage_line
+from apps.utils.constants import METHOD_CHOICES, PROTOCOL_CHOICES, OBFS_CHOICES
 
 
 class Index(View):
@@ -91,6 +92,20 @@ class Profile(LoginRequireMixin, View):
 
     def post(self, request):
         pass
+
+
+class AccountEdit(LoginRequireMixin, View):
+    def get(self, request):
+        user = request.user
+        constants = {
+            "METHODS": [method[0] for method in METHOD_CHOICES],
+            "PROTOCOLS": [protocol[0] for protocol in PROTOCOL_CHOICES],
+            "OBFSS": [obfs[0] for obfs in OBFS_CHOICES],
+        }
+        if user is not None:
+            return render(request, 'backend/my/account_edit.html', constants)
+        else:
+            return render(request, '/')
 
 
 def record_modify(modify_type=None):
