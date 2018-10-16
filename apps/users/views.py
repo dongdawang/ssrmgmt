@@ -9,24 +9,23 @@ from django.views import View
 from django.contrib.auth.hashers import make_password
 from django.core.cache import cache
 
-from goods.models import SsrServer, SsrAccount
-from .forms import (UploadProfilePhoto, ModifyPwdForm, ModifyGeneralForm, ModifyUsernameForm, ModifySSRForm)
-from .models import UserProfile, EmailVerifyRecord, UserModifyRecord
+from .forms import (UploadProfilePhoto, ModifyPwdForm, ModifyGeneralForm, ModifyUsernameForm, ModifySSRForm,
+                    WorkOrderForm)
+from .models import UserProfile, UserModifyRecord, SSRAccount, WorkOrder
+from node.models import Node
 from apps.utils.mixin import LoginRequireMixin
 from apps.utils.email_send import send_type_email, create_code
 
-from pyecharts import Bar
 from apps.utils.nets import get_host_ip_cache
-from apps.utils.charts import brand_usage, get_brand_usage_line
 from apps.utils.constants import METHOD_CHOICES, PROTOCOL_CHOICES, OBFS_CHOICES
+from apps.utils.ssrmgr import SS, SSR
 
 
 class Index(View):
 
     def get(self, request):
-        servers = SsrServer.objects.all()
         data = {
-            'servers': servers,
+            'servers': "",
             'ip': get_host_ip_cache(),
         }
         return render(request, 'backend/system/system.html', data)
@@ -54,6 +53,14 @@ class Register(View):
             user = UserProfile(username=create_code(8), email=email)
             user.set_password(password)  # 通过hash和加salt的方式加密
             user.save()  # save操作执行写入数据库的操作，之后才算注册成功
+
+            # 创建一个默认的SSR账号
+            ssr = SSRAccount()
+            ssr.port = SSRAccount.available_port()
+            ssr.passwd = "12345"
+            ssr.user = user
+            ssr.node = Node.default_node()
+            ssr.save()
 
             # 注册之后，判断下是否注册成功
             user = authenticate(username=email, password=password)
@@ -118,6 +125,7 @@ class AccountEdit(LoginRequireMixin, View):
             "METHODS": [method[0] for method in METHOD_CHOICES],
             "PROTOCOLS": [protocol[0] for protocol in PROTOCOL_CHOICES],
             "OBFSS": [obfs[0] for obfs in OBFS_CHOICES],
+            "ssr": SSRAccount.objects.get(user=user)
         }
         if user is not None:
             return render(request, 'backend/my/account_edit.html', constants)
@@ -198,6 +206,7 @@ class AccountSSRModify(LoginRequireMixin, View):
     def post(self, request):
         ssr_form = ModifySSRForm(request.POST)
         if ssr_form.is_valid():
+            passwd = request.POST.get('passwd')
             method = request.POST.get('method')
             protocol = request.POST.get('protocol')
             obfs = request.POST.get('obfs')
@@ -207,11 +216,13 @@ class AccountSSRModify(LoginRequireMixin, View):
             else:
                 obfs_enable = False
             user = request.user
-            user.ssr_method = method
-            user.ssr_protocol = protocol
-            user.ssr_obfs = obfs
-            user.ssr_obfs_enable = obfs_enable
-            user.save()
+            ssr = SSRAccount.objects.get(user=user)
+            ssr.passwd = passwd
+            ssr.method = method
+            ssr.protocol = protocol
+            ssr.obfs = obfs
+            ssr.obfs_enable = obfs_enable
+            ssr.save()
             return JsonResponse({"res": "SSR配置修改成功"})
         else:
             return JsonResponse({"res": "SSR配置修改失败，表单非法"})
@@ -236,16 +247,75 @@ class AccountEmailModify(LoginRequireMixin, View):
             return JsonResponse({"res": "邮箱修改失败, 验证码不正确"})
 
 
-class ProfilePhotoUpload(LoginRequireMixin, View):
-    """用户修改头像
-    """
-    @record_modify("modify_profile_photo")
-    def post(self, request):
-        profile_photo_form = UploadProfilePhoto(request.POST, request.FILES, instance=request.user)
-        if profile_photo_form.is_valid():
-            profile_photo_form.save()
+class ProfileShow(LoginRequireMixin, View):
+    """显示用户属性"""
+    def get(self, request):
+        user = request.user
+        params = {
+            'level': user.user_level(),
+        }
+        return render(request, 'backend/my/profile.html', params)
 
-        return render(request, 'users/profile.html', {})
+
+class ProfileCenter(LoginRequireMixin, View):
+    """显示用户中心"""
+    def get(self, request):
+        user = request.user
+        ssr_account = SSRAccount.objects.get(user=user)
+        params = {
+            'ssr_account': ssr_account,
+            'ss': SS(ssr_account),
+            'ssr': SSR(ssr_account)
+        }
+        return render(request, 'backend/my/center.html', params)
+
+
+class WorkOrderShow(LoginRequireMixin, View):
+    """工单处理"""
+    def get(self, request):
+        user = request.user
+        workorder = WorkOrder.objects.filter(user=user)
+        params = {
+            "workorder": workorder
+        }
+        return render(request, 'backend/my/workorder.html', params)
+
+
+class WorkorderView(LoginRequireMixin, View):
+    """显示详细工单"""
+    def get(self, request, wo_id):
+        wo = WorkOrder.objects.get(id=wo_id)
+        return render(request, 'backend/my/workorder_view.html', {'workorder': wo})
+
+
+class WorkorderDelete(LoginRequireMixin, View):
+    """删除工单"""
+    def get(self, request, wo_id):
+        try:
+            wo = WorkOrder.objects.get(id=wo_id)
+            wo.delete()
+            return JsonResponse({"res": "删除工单成功"})
+        except Exception as e:
+            return JsonResponse({"res": "删除工单失败"})
+
+
+class WorkOrderAdd(LoginRequireMixin, View):
+    """工单"""
+    def get(self, request):
+        user = request.user
+        return render(request, 'backend/my/workorder_add.html')
+
+    def post(self, request):
+        workorder = WorkOrderForm(request.POST)
+        if workorder.is_valid():
+            wo = WorkOrder()
+            wo.user = request.user
+            wo.title = request.POST.get('title')
+            wo.body = request.POST.get('body')
+            wo.save()
+            return JsonResponse({"res": "工单提交成功"})
+        else:
+            return JsonResponse({"res": "表单不合法"})
 
 
 class ModifyPwd(LoginRequireMixin, View):
@@ -295,72 +365,43 @@ class SendEmailCode(View):
                 return JsonResponse({'res': 'unknown'})
 
 
-class ModifyEmail(LoginRequireMixin, View):
-    """修改个人邮箱
-    """
-    def get(self, request):
-        user = request.user
-        if user is not None:
-            dct = {}
-            return render(request, 'users/email.html', dct)
-        else:
-            return render(request, 'users/error.html', {"error": '请登录后再操作'})
-
-    @record_modify("modify_email")
-    def post(self, request):
-        email = request.POST.get('email', '')
-        code = request.POST.get('code', '')
-
-        existed_records = EmailVerifyRecord.objects.filter(email=email, code=code, send_type='modify_email')
-        if existed_records:
-            user = request.user
-            user.email = email
-            user.save()
-            return render(request, "users/profile.html", {"status": "邮箱修改成功"})
-        else:
-            return render(request, "users/email.html", {"status": "验证码错误"})
-
-
 class UserCharts(LoginRequireMixin, View):
     """管理用户的图表
     """
     def get(self, request):
         user = request.user
-        accounts = SsrAccount.objects.filter(user=user)
         times = ['最近一天', '最近一周', '最近一个月']
         dct = {
-            'accounts': accounts,
+            'accounts': "",
             'times': times
         }
         return render(request, 'users/charts.html', dct)
 
     def post(self, request):
-        user = request.user
-        accounts = SsrAccount.objects.filter(user=user)
-        times = ['最近一天', '最近一周', '最近一个月']
-        account_name = request.POST.get('account')
-        account = SsrAccount.objects.filter(account_name=account_name)
-        if account:
-            account = account[0]
-        time = request.POST.get('time')
-        line = bar()
-        # 定制图表
-        if time == '最近一天':
-            now = datetime.now()
-            # now = datetime(2018, 8, 17, 0)
-            start = now - timedelta(days=1)
-            stop = now
-            step = timedelta(hours=1)
-            line = get_brand_usage_line(account, start, stop, step)
-        dct = {
-            'accounts': accounts,
-            'times': times,
-            "myechart": line.render_embed(),
-            "host": "https://pyecharts.github.io/assets/js",
-            "script_list": line.get_js_dependencies(),
-            "error": '请登录后再操作',
-        }
-        return render(request, 'users/charts.html', dct)
+        # user = request.user
+        # times = ['最近一天', '最近一周', '最近一个月']
+        # account_name = request.POST.get('account')
+        # if account:
+        #     account = account[0]
+        # time = request.POST.get('time')
+        # line = bar()
+        # # 定制图表
+        # if time == '最近一天':
+        #     now = datetime.now()
+        #     # now = datetime(2018, 8, 17, 0)
+        #     start = now - timedelta(days=1)
+        #     stop = now
+        #     step = timedelta(hours=1)
+        #     line = get_brand_usage_line(account, start, stop, step)
+        # dct = {
+        #     'accounts': accounts,
+        #     'times': times,
+        #     "myechart": line.render_embed(),
+        #     "host": "https://pyecharts.github.io/assets/js",
+        #     "script_list": line.get_js_dependencies(),
+        #     "error": '请登录后再操作',
+        # }
+        return render(request, 'users/charts.html', {})
 
 
 class ModifyShow(LoginRequireMixin, View):
@@ -373,17 +414,3 @@ class ModifyShow(LoginRequireMixin, View):
     def post(self, request):
         pass
 
-
-class UserAccounts(LoginRequireMixin, View):
-    """获取用户创建的SSR账号
-    """
-    def get(self, request):
-        user = request.user
-        accounts = SsrAccount.objects.filter(user=user)
-        return render(request, 'users/accounts.html', {'accounts': accounts})
-
-
-def bar():
-    bar_ins = Bar("未成功生成图表", "ERROR")
-    bar_ins.add("元素", [], [], is_more_utils=False)
-    return bar_ins

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import UserProfile, EmailVerifyRecord
+# from .models import UserProfile, EmailVerifyRecord
 
 
 class UserProfileAdmin(admin.ModelAdmin):
@@ -15,5 +15,5 @@ class EmailVerifyRecordAdmin(admin.ModelAdmin):
     list_filter = ['code', 'email', 'send_type', 'send_time']
 
 
-admin.site.register(UserProfile, UserProfileAdmin)
-admin.site.register(EmailVerifyRecord, EmailVerifyRecordAdmin)
+# admin.site.register(UserProfile, UserProfileAdmin)
+# admin.site.register(EmailVerifyRecord, EmailVerifyRecordAdmin)

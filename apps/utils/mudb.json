@@ -14,5 +14,21 @@
   "protocol": "auth_sha1_v4_compatible",
   "speed_limit_per_con": 0,
   "d": 1000
+ },
+ {
+  "protocol_param": "",
+  "user": "dotsec",
+  "enable": 1,
+  "port": 6700,
+  "method": "aes-128-ctr",
+  "transfer_enable": 900727656415232,
+  "u": 999,
+  "forbidden_port": "",
+  "obfs": "tls1.2_ticket_auth_compatible",
+  "speed_limit_per_user": 0,
+  "passwd": "pwdone",
+  "protocol": "auth_sha1_v4_compatible",
+  "speed_limit_per_con": 0,
+  "d": 1000
  }
 ]

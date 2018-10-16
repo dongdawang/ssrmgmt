@@ -1,10 +1,74 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'backend/bebase.html' %}
+{% load static %}
 
-</body>
-</html>
+{% block main_content %}
+    <section id="main-content">
+        <section class="wrapper">
+            <!-- row -->
+            <div class="row mt">
+                <div class="col-md-12">
+                    <div class="content-panel">
+                        <table class="table table-striped table-advance table-hover">
+                            <h4><i class="fa fa-angle-right"></i> 工单 </h4>
+                            <hr>
+                            <thead>
+                            <tr>
+                                <th><i class="fa fa-clock-o"></i> 提交时间</th>
+                                <th><i class="fa fa-bookmark"></i> 标题</th>
+                                <th><i class=" fa fa-edit"></i> 状态</th>
+                                <th class="hidden-phone"><i class="fa fa-question-circle"></i> 详细</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for order in workorder %}
+                                <tr>
+                                    <td>{{ order.add_time|date:"Y-m-d H:i:s" }}</td>
+                                    <td class="hidden-phone"><a
+                                            href="{% url 'users:workorder-view' order.id %}">{{ order.title|truncatewords:"15" }}</a>
+                                    </td>
+                                    <td>
+                                        {% if order.status == "open" %}
+                                            <span class="label label-danger label-mini">OPEN</span>
+                                        {% else %}
+                                            <span class="label label-success label-mini">CLOSED</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><a type="button" class="btn btn-info btn-xs"
+                                           href={% url 'users:workorder-view' order.id %}>desc</a></td>
+                                    <td>
+                                        <button class="btn btn-danger btn-xs"
+                                                onclick="del_wo('{% url 'users:workorder-delete' order.id %}')">
+                                            <i class="fa fa-trash-o "></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <a type="button" class="btn btn-theme " href="{% url 'users:workorder-add' %}">
+                            <i class="fa fa-plus"></i>添加工单
+                        </a>
+                    </div>
+                    <!-- /content-panel -->
+                </div>
+                <!-- /col-md-12 -->
+            </div>
+            <!-- /row -->
+        </section>
+    </section>
+{% endblock %}
+
+{% block otherscript %}
+    <script>
+        function del_wo(url) {
+            csrf = '{{ csrf_token }}';
+            //发起ajax请求，注意csrf攻击
+            $.get(url,
+                function (data) {
+                    //获取返回的数据并进行操作
+                    alert(data.res);
+                })
+        }
+    </script>
+{% endblock %}

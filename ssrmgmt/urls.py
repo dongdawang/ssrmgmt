@@ -20,12 +20,11 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.auth.views import logout
 
-from users.views import (Index, Login, Register, Profile, ProfilePhotoUpload,
-                         ModifyPwd, ModifyEmail, SendEmailCode, UserCharts, UserAccounts,
-                         ModifyShow, AccountEdit, AccountProfilePhotoModify, AccountPwdModify,
-                         AccountGeneralModify, AccountNameModify, AccountSSRModify, AccountEmailModify)
-from goods.views import Ping
-from operation.views import CreateAccount
+from users.views import (Index, Login, Register, Profile, ModifyPwd, SendEmailCode, UserCharts, ModifyShow,
+                         AccountEdit, AccountProfilePhotoModify, AccountPwdModify, AccountGeneralModify,
+                         AccountNameModify, AccountSSRModify, AccountEmailModify, ProfileShow, ProfileCenter,
+                         WorkOrderShow, WorkOrderAdd, WorkorderView, WorkorderDelete)
+from API.views import (User)
 # from ssrmgmt.settings import MEDIA_ROOT
 
 users_url = [
@@ -33,11 +32,8 @@ users_url = [
     path('logout/', logout, {'next_page': settings.LOGOUT_REDIRECT_URL}, name="logout"),
     path('register/', Register.as_view(), name='register'),
     path('profile/', Profile.as_view(), name='profile'),
-    path('profile/profile-photo', ProfilePhotoUpload.as_view(), name='profile-photo'),
-    path('profile/modify-email', ModifyEmail.as_view(), name='modify-email'),
     path('profile/send-mail', SendEmailCode.as_view(), name='send_mail'),
     path('profile/charts', UserCharts.as_view(), name='usercharts'),
-    path('profile/accounts', UserAccounts.as_view(), name='accounts'),
     path('profile/modifyshow', ModifyShow.as_view(), name='modifyshow'),
     path('profile/account_edit', AccountEdit.as_view(), name='account_edit'),
     path('account/profile_photo_modify', AccountProfilePhotoModify.as_view(), name="photo_modify"),
@@ -46,21 +42,25 @@ users_url = [
     path('account/modify-username', AccountNameModify.as_view(), name='modify-username'),
     path('account/modify-ssr', AccountSSRModify.as_view(), name='modify-ssr'),
     path('account/modify-email', AccountEmailModify.as_view(), name='modify-email'),
+    path('profile/show', ProfileShow.as_view(), name='profile-show'),
+    path('profile/center', ProfileCenter.as_view(), name='profile-center'),
+    path('workorder/show', WorkOrderShow.as_view(), name='workorder-show'),
+    path('workorder/add', WorkOrderAdd.as_view(), name='workorder-add'),
+    path('workorder/delete/<int:wo_id>', WorkorderDelete.as_view(), name='workorder-delete'),
+    path('workorder/view/<int:wo_id>', WorkorderView.as_view(), name='workorder-view')
 ]
 
-operation_url = [
-    path('createaccount/<str:ip>', CreateAccount.as_view(), name='create_account'),
-    path('createaccount/', CreateAccount.as_view(), name='create_account'),
+api_url = [
+    path('user/', User.as_view(), name='user'),
 ]
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', Index.as_view(), name='index'),
-    path('ping', Ping.as_view(), name='ping'),
     # 创建一个命名空间，可以有效的对url进行分类
     path('users/', include((users_url, "users")), name='users'),
+    path('api/', include((api_url, "API")), name='api'),
     # path('media/<str>', serve, {"document_root": MEDIA_ROOT})
-    path('operation/', include((operation_url, 'operation')), name='operation')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

@@ -1,0 +1,47 @@
+{% extends 'backend/bebase.html' %}
+{% load static %}
+
+{% block main_content %}
+    <section id="main-content">
+        <section class="wrapper">
+            <!-- page start-->
+            <div class="row mt">
+                <div class="col-sm-12">
+                    <section class="panel">
+                        <header class="panel-heading wht-bg">
+                            <h4>
+                                详细工单
+                            </h4>
+                        </header>
+                        <div class="panel-body ">
+                            <div class="mail-sender">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <h4 class="pull-left"> {{ workorder.title }} </h4>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p class="date"> {{ workorder.add_time|date:"Y-m-d H:i:s" }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="view-mail">
+                                {{ workorder.body|safe  }}
+                            </div>
+                            <div class="compose-btn pull-left">
+                                <a href="{% url 'users:workorder-show' %}" class="btn btn-sm btn-theme"><i class="fa fa-reply"></i>
+                                    返回</a>
+                                <button class="btn btn-sm "><i class="fa fa-arrow-right"></i> Forward</button>
+                                <button class="btn  btn-sm tooltips" data-original-title="Print" type="button"
+                                        data-toggle="tooltip" data-placement="top" title=""><i class="fa fa-print"></i>
+                                </button>
+                                <button class="btn btn-sm tooltips" data-original-title="Trash" data-toggle="tooltip"
+                                        data-placement="top" title=""><i class="fa fa-trash-o"></i></button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </section>
+        <!-- /wrapper -->
+    </section>
+{% endblock %}

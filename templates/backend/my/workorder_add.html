@@ -1,0 +1,73 @@
+{% extends 'backend/bebase.html' %}
+{% load static %}
+
+{% block other_link %}
+    <link href="{% static "lib/bootstrap-wysihtml5/bootstrap-wysihtml5.css" %}" rel="stylesheet"/>
+{% endblock %}
+
+{% block main_content %}
+    <section id="main-content">
+        <section class="wrapper">
+            <!-- page start-->
+            <div class="row mt">
+                <div class="col-sm-12">
+                    <section class="panel">
+                        <header class="panel-heading wht-bg">
+                            <h4 class="gen-case">
+                                提交工单
+                            </h4>
+                        </header>
+                        <div class="panel-body">
+                            <div class="compose-mail">
+                                <form role="form-horizontal">
+                                    <div class="form-group">
+                                        <label for="subject" class="">Title:</label>
+                                        <input type="text" tabindex="1" id="text_title" class="form-control">
+                                    </div>
+                                    <div class="compose-editor">
+                                        <textarea class="wysihtml5 form-control" rows="9" id="text_body"></textarea>
+                                    </div>
+                                    <div class="compose-btn">
+                                        <button class="btn btn-theme btn-sm" id="wo_add" type="button"><i class="fa fa-check"></i> 提交</button>
+                                        <button class="btn btn-sm"><i class="fa fa-times"></i> Discard</button>
+                                        <button class="btn btn-sm">Draft</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </section>
+        <!-- /wrapper -->
+    </section>
+{% endblock %}
+
+{% block otherscript %}
+    <script>
+        $(function () {
+            //修改账号密码
+            $('#wo_add').click(function () {
+                csrf = '{{ csrf_token }}';
+                body = $('#text_body').val();
+                title = $('#text_title').val();
+                //发起ajax请求，注意csrf攻击
+                $.post("{% url 'users:workorder-add' %}", {
+                    'csrfmiddlewaretoken': csrf,
+                    'body': body,
+                    'title': title
+                }, function (data) {
+                    //获取返回的数据并进行操作
+                    alert(data.res);
+                })
+            });
+        });
+    </script>
+    <script type="text/javascript" src="{% static "lib/bootstrap-wysihtml5/wysihtml5-0.3.0.js" %}"></script>
+    <script type="text/javascript" src="{% static "lib/bootstrap-wysihtml5/bootstrap-wysihtml5.js" %}"></script>
+    <script type="text/javascript">
+        //wysihtml5 start
+        $('.wysihtml5').wysihtml5();
+        //wysihtml5 end
+    </script>
+{% endblock %}

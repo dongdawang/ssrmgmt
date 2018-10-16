@@ -25,7 +25,13 @@ class ModifyUsernameForm(forms.Form):
 
 
 class ModifySSRForm(forms.Form):
+    passwd = forms.CharField(required=False, max_length=30)
     method = forms.CharField(required=False, max_length=30)
     protocol = forms.CharField(required=False, max_length=30)
     obfs = forms.CharField(required=False, max_length=30)
     obfs_enable = forms.BooleanField(required=False)
+
+
+class WorkOrderForm(forms.Form):
+    title = forms.CharField(max_length=50)
+    body = forms.CharField()

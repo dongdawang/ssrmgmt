@@ -244,7 +244,7 @@
         <div id="sidebar" class="nav-collapse ">
             <!-- sidebar menu start-->
             <ul class="sidebar-menu" id="nav-accordion">
-                <p class="centered"><a href="profile.html"><img src="{{ MEDIA_URL }}{{ request.user.profile_photo }}" class="img-circle" width="80"></a>
+                <p class="centered"><a href="{% url 'users:profile-show' %}"><img src="{{ MEDIA_URL }}{{ request.user.profile_photo }}" class="img-circle" width="80"></a>
                 </p>
                 <h5 class="centered">{{ request.user.username }}</h5>
                 <li class="mt">
@@ -259,10 +259,10 @@
                         <span>我的</span>
                     </a>
                     <ul class="sub">
-                        <li><a href="{% url 'users:profile' %}">用户中心</a></li>
-                        <li><a href="buttons.html">账户资料</a></li>
+                        <li><a href="{% url 'users:profile-center' %}">用户中心</a></li>
+                        <li><a href="{% url 'users:profile-show' %}">账户资料</a></li>
                         <li><a href="{% url 'users:account_edit' %}">资料编辑</a></li>
-                        <li><a href="font_awesome.html">提交工单</a></li>
+                        <li><a href="{% url 'users:workorder-show' %}">用户工单</a></li>
                     </ul>
                 </li>
                 <li class="sub-menu">

@@ -3,7 +3,7 @@ from django.core.mail import send_mail
 from django.core.cache import cache
 from django.conf import settings
 
-from users.models import EmailVerifyRecord
+# from users.models import EmailVerifyRecord
 
 
 def create_code(code_len=8):

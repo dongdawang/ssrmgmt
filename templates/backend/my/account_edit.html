@@ -245,12 +245,19 @@
                     <div class="showback">
                         <h4><i class="fa fa-angle-right"></i> 修改SSR账号信息</h4>
                         <form class="cmxform form-horizontal style-form">
+                            <div class="form-group ">
+                                <label for="passwd" class="control-label col-lg-2">密码</label>
+                                <div class="col-lg-10">
+                                    <input class="form-control " id="passwd" name="passwd" type="text"
+                                    value="{{ ssr.passwd }}"/>
+                                </div>
+                            </div>
                             <div class="form-group">
                                 <label for="method" class="control-label col-lg-2">加密方法</label>
                                 <!-- Button trigger modal -->
                                 <div class="col-lg-10">
                                     <select class="form-control" id="method" name="method">
-                                        <option>{{ request.user.ssr_method }}</option>
+                                        <option>{{ ssr.method }}</option>
                                         {% for i in METHODS %}
                                             <option>{{ i }}</option>
                                         {% endfor %}
@@ -262,7 +269,7 @@
                                 <!-- Button trigger modal -->
                                 <div class="col-lg-10">
                                     <select class="form-control" id="protocol" name="protocol">
-                                        <option>{{ request.user.ssr_protocol }}</option>
+                                        <option>{{ ssr.protocol }}</option>
                                         {% for i in PROTOCOLS %}
                                             <option>{{ i }}</option>
                                         {% endfor %}
@@ -274,7 +281,7 @@
                                 <!-- Button trigger modal -->
                                 <div class="col-lg-10">
                                     <select class="form-control" id="obfs" name="obfs">
-                                        <option>{{ request.user.ssr_obfs }}</option>
+                                        <option>{{ ssr.obfs }}</option>
                                         {% for i in OBFSS %}
                                             <option>{{ i }}</option>
                                         {% endfor %}
@@ -287,7 +294,7 @@
                                 <div class="col-lg-10">
                                     <div class="switch switch-square" data-on-label="<i class=' fa fa-check'></i>"
                                          data-off-label="<i class='fa fa-times'></i>">
-                                        {% if request.user.ssr_obfs_enable %}
+                                        {% if ssr.obfs_enable %}
                                             <input type="checkbox" id="obfs_enable" name="obfs_enable" checked/>
                                         {% else %}
                                             <input type="checkbox" id="obfs_enable" name="obfs_enable"/>
@@ -414,6 +421,7 @@
                     obfs_enable = true;
                 }
                 csrf = '{{ csrf_token }}';
+                passwd = $('#passwd').val();
                 method = $('#method').val();
                 protocol = $('#protocol').val();
                 obfs = $('#obfs').val();
@@ -421,6 +429,7 @@
                 //发起ajax请求，注意csrf攻击
                 $.post("{% url 'users:modify-ssr' %}", {
                     'csrfmiddlewaretoken': csrf,
+                    'passwd': passwd,
                     'method': method,
                     'protocol': method,
                     'obfs': obfs,
