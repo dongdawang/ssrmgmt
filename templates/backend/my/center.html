@@ -81,38 +81,44 @@
             document.execCommand("Copy");
         }
     </script>
-      <script type="text/javascript">
-      var Script = function () {
-          $(function () {
-              Morris.Area({
-                  element: 'hero-area',
-                  data: [
-                      {period: '2010 Q1', download: 2666, upload: null, total: 2647},
-                      {period: '2010 Q2', download: 2778, upload: 2294, total: 2441},
-                      {period: '2010 Q3', download: 4912, upload: 1969, total: 2501},
-                      {period: '2010 Q4', download: 3767, upload: 3597, total: 5689},
-                      {period: '2011 Q1', download: 6810, upload: 1914, total: 2293},
-                      {period: '2011 Q2', download: 5670, upload: 4293, total: 1881},
-                      {period: '2011 Q3', download: 4820, upload: 3795, total: 1588},
-                      {period: '2011 Q4', download: 15073, upload: 5967, total: 5175},
-                      {period: '2012 Q1', download: 10687, upload: 4460, total: 2028},
-                      {period: '2012 Q2', download: 8432, upload: 5713, total: 1791}
-                  ],
-                    
-                  xkey: 'period',
-                  ykeys: ['download', 'upload', 'total'],
-                  labels: ['下载', '上传', '总使用'],
-                  hideHover: 'auto',
-                  lineWidth: 1,
-                  pointSize: 5,
-                  lineColors: ['#4a8bc2', '#ff6c60', '#a9d86e'],
-                  fillOpacity: 0.5,
-                  smooth: true
-              });
-              $('.code-example').each(function (index, el) {
-                  eval($(el).text());
-              });
-          });
-      }();
-  </script>
+    <script type="text/javascript">
+        var Script = function () {
+            $(function () {
+                Morris.Area({
+                    element: 'hero-area',
+                    data: [
+                        {% for data in usages %}
+                            {
+                                day:"{{ data.x|date:"Y-m-d" }}",
+                                download: {{ data.yd }},
+                                upload: {{ data.yu }},
+                                total: {{data.yd}}+{{ data.yu }}
+                            },
+                        {% endfor %}
+                    ],
+                    xkey: 'day',
+                    ykeys: ['download', 'upload', 'total'],
+                    labels: ['下载(m)', '上传(m)', '总使用(m)'],
+                    /*xLabelFormat: function (d) {
+                        if (d.day % 3 === 0) {
+                            return d
+                        } else {
+                            return ""
+                        }
+                    },*/
+                    //xLabelAngle: 45,
+                    hideHover: 'auto',
+                    lineWidth: 1,
+                    pointSize: 5,
+                    lineColors: ['#4a8bc2', '#ff6c60', '#a9d86e'],
+                    fillOpacity: 0.5,
+                    smooth: true,
+                    parse_time: false
+                });
+                $('.code-example').each(function (index, el) {
+                    eval($(el).text());
+                });
+            });
+        }();
+    </script>
 {% endblock %}

@@ -1,10 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'backend/bebase.html' %}
 
-</body>
-</html>
+{% block title %}
+    <title>SSRMGMT-节点列表</title>
+{% endblock %}
+
+{% block main_content %}
+    <section id="main-content">
+        <section class="wrapper">
+            <!-- row -->
+            <div class="row mt">
+                <div class="col-md-12">
+                    <div class="showback">
+                        <h4><i class="fa fa-angle-right"></i>节点列表</h4>
+                        <div class="alert" style="color: #383d41; background-color: #e2e3e5; border-color: #d6d8db">
+                            <div class="row">
+                                <div class="col-xs-6 col-md-3">名称</div>
+                                <div class="col-xs-6 col-md-2"><strong>IP</strong></div>
+                                <div class="col-xs-6 col-md-1"><strong>online</strong></div>
+                                <div class="col-xs-6 col-md-2"><strong>人数</strong></div>
+                                <div class="col-xs-6 col-md-1"><a href="#">详情</a></div>
+                                <div class="col-xs-6 col-md-1"><a href="#">详情</a></div>
+                                <div class="col-xs-6 col-md-2"></div>
+                            </div>
+                        </div>
+                        {% for node in nodes %}
+                            <div class="alert alert-info">
+                                <div class="row">
+                                    <div class="col-xs-6 col-md-3">{{ node.name }}</div>
+                                    <div class="col-xs-6 col-md-2"><strong>{{ node.ip }}</strong></div>
+                                    <div class="col-xs-6 col-md-1"><strong>True</strong></div>
+                                    <div class="col-xs-6 col-md-2"><strong></strong></div>
+                                    <div class="col-xs-6 col-md-1"><a href="#">详情</a></div>
+                                    <div class="col-xs-6 col-md-1"><a href="#">详情</a></div>
+                                    <div class="col-xs-6 col-md-2"></div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <!-- /content-panel -->
+                </div>
+                <!-- /col-md-12 -->
+            </div>
+            <!-- /row -->
+        </section>
+    </section>
+{% endblock %}
+

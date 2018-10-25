@@ -8,10 +8,13 @@ from django.http import JsonResponse, HttpResponse
 from django.views import View
 from django.contrib.auth.hashers import make_password
 from django.core.cache import cache
+from django.core.exceptions import ObjectDoesNotExist
+from django.utils.decorators import method_decorator
+from django.db import transaction
 
 from .forms import (UploadProfilePhoto, ModifyPwdForm, ModifyGeneralForm, ModifyUsernameForm, ModifySSRForm,
                     WorkOrderForm)
-from .models import UserProfile, UserModifyRecord, SSRAccount, WorkOrder
+from .models import UserProfile, UserModifyRecord, SSRAccount, WorkOrder, DataUsageRecord, TradeRecord
 from node.models import Node
 from apps.utils.mixin import LoginRequireMixin
 from apps.utils.email_send import send_type_email, create_code
@@ -262,10 +265,12 @@ class ProfileCenter(LoginRequireMixin, View):
     def get(self, request):
         user = request.user
         ssr_account = SSRAccount.objects.get(user=user)
+        usages = DataUsageRecord.last_30_days(ssr_account)
         params = {
             'ssr_account': ssr_account,
             'ss': SS(ssr_account),
-            'ssr': SSR(ssr_account)
+            'ssr': SSR(ssr_account),
+            'usages': usages,
         }
         return render(request, 'backend/my/center.html', params)
 
@@ -316,6 +321,64 @@ class WorkOrderAdd(LoginRequireMixin, View):
             return JsonResponse({"res": "工单提交成功"})
         else:
             return JsonResponse({"res": "表单不合法"})
+
+
+# @method_decorator(transaction.atomic, name='post')
+class BuyTime(LoginRequireMixin, View):
+    """购买时长"""
+    def get(self, request):
+        user = request.user
+        ssr = SSRAccount.objects.get(user=user)
+        params = {
+            'coin_nums': user.coin_nums,
+            'ssr': ssr,
+        }
+        return render(request, 'backend/buy/time.html', params)
+
+    @method_decorator(transaction.atomic)
+    def post(self, request):
+        """数据库原子性：
+        关于保证增加(1)ssr时长和(2)减去用户硬币数这个两个操作的事务原子性
+
+        django的ORM在对数据库操作时，在一个view上设置transaction.atomic，
+        则view中所有的ORM操作都会在view结束时自动commit。所以就可以保证在一
+        个view中出现的数据库操作具有原子性atomic。
+        """
+        user = request.user
+        try:
+            ssr = SSRAccount.objects.get(user=user)
+            day = request.POST.get('day')
+            if int(day) > user.coin_nums:
+                return JsonResponse({"res": "硬币余额不足！"})
+            if ssr.expiration_time < datetime.now():
+                ssr.expiration_time = datetime.now() + timedelta(days=int(day))
+            else:
+                ssr.expiration_time += timedelta(days=int(day))
+            user.coin_nums -= int(day)
+            trade = TradeRecord()
+            trade.user = user
+            trade.amount = int(day)
+            trade.time = int(day)
+            user.save()
+            ssr.save()
+            trade.save()
+        except ObjectDoesNotExist as ex:
+            return JsonResponse({"res": "购买时长出错！"})
+
+        return JsonResponse({
+            "res": "购买成功, \n当前SSR到期时间:{}".format(ssr.expiration_time.strftime('%Y-%m-%d %H:%M:%S'))
+        })
+
+
+class TradeRecodeShow(LoginRequireMixin, View):
+    """显示用户交易记录"""
+    def get(self, request):
+        user = request.user
+        trades = TradeRecord.objects.filter(user=user)
+        params = {
+            "trades": trades
+        }
+        return render(request, 'backend/buy/records.html', params)
 
 
 class ModifyPwd(LoginRequireMixin, View):

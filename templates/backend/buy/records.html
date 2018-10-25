@@ -1,10 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'backend/bebase.html' %}
 
-</body>
-</html>
+{% block title %}
+    <title>SSRMGMT-购买记录</title>
+{% endblock %}
+
+{% block main_content %}
+        <section id="main-content">
+        <section class="wrapper">
+            <!-- row -->
+            <div class="row mt">
+                <div class="col-md-12">
+                    <div class="content-panel">
+                        <table class="table table-striped table-advance table-hover">
+                            <h4><i class="fa fa-angle-right"></i> 用户购买记录 </h4>
+                            <hr>
+                            <thead>
+                            <tr>
+                                <th><i class="fa fa-clock-o"></i> 交易时间 </th>
+                                <th><i class="fa fa-bitcoin"></i> 交易硬币 </th>
+                                <th><i class=" fa fa-sun-o"></i> 购买时间 </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for trade in trades %}
+                                <tr>
+                                <td> {{ trade.add_time|date:"Y-m-d H:i:s" }} </td>
+                                <td>{{ trade.amount }} per</td>
+                                <td>{{ trade.time }} day</td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /content-panel -->
+                </div>
+                <!-- /col-md-12 -->
+            </div>
+            <!-- /row -->
+        </section>
+    </section>
+{% endblock %}

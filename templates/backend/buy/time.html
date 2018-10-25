@@ -1,10 +1,101 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'backend/bebase.html' %}
+{% load static %}
 
-</body>
-</html>
+{% block title %}
+    <title>SSRMGMT-购买时长</title>
+{% endblock %}
+
+{% block main_content %}
+    <section id="main-content">
+        <section class="wrapper">
+            <!--<h3><i class="fa fa-angle-right"></i> Form Components</h3>-->
+            <!-- BASIC FORM ELELEMNTS -->
+            <div class="row mt">
+                <div class="col-lg-12">
+                    <div class="form-panel">
+                        <h4 class="mb"><i class="fa fa-angle-right"></i> 购买时长 </h4>
+                        <form class="form-horizontal style-form">
+                            <div class="form-group">
+                                <label class="col-sm-2 col-sm-2 control-label">当前账号到期时间</label>
+                                <div class="col-sm-10">
+                                    <input class="form-control" id="disabledInput" type="text"
+                                           value="{{ ssr.expiration_time|date:"Y-m-d H:i:s" }}" disabled>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 col-sm-2 control-label">用户拥有硬币数</label>
+                                <div class="col-sm-10">
+                                    {{ coin_nums }}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 col-sm-2 control-label">输入购买天数</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control"
+                                           placeholder="请输入购买天数(整数)，一个硬币可以购买一天" id="day">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-lg-offset-2 col-lg-10">
+                                    <button class="btn btn-theme" type="button" id="buytime">确认购买</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- col-lg-12-->
+            </div>
+            <!-- /row -->
+        </section>
+        <!-- /wrapper -->
+    </section>
+{% endblock %}
+
+{% block otherscript %}
+    <script>
+        $(function () {
+            // $('#day').bind('input propertychange', function() {
+            //     var day = $(this).val();
+            //     var re = /^[0-9]*[1-9][0-9]*$/;
+            //     alert( re.test(day));
+            //     // if(isNaN(day)) {alert("不是数字");$(this).focus()}
+            //     // alert($(this).val());
+            //     // $('#result').html($(this).val().length + ' characters');
+            // });
+            $('#day').blur(function () {
+                var day = $(this).val();
+                var re = /^[0-9]*[1-9][0-9]*$/;
+                if (re.test(day)) {
+                    if (day > parseInt("{{ coin_nums }}", 10)) {
+                        alert("硬币余额不足！")
+                    }
+                } else {
+                    alert("请输入正整数，购买天数必须是整数！");
+                }
+
+            });
+            $('#buytime').click(function () {
+                var day = $('#day').val();
+                var re = /^[0-9]*[1-9][0-9]*$/;
+                if (re.test(day)) {
+                    if (day > parseFloat({{ coin_nums }})) {
+                        alert("硬币余额不足！")
+                    } else {
+                        var csrf = '{{ csrf_token }}';
+                        //发起ajax请求，注意csrf攻击
+                        $.post("{% url 'users:buy-time' %}", {
+                            'csrfmiddlewaretoken': csrf,
+                            'day': day
+                        }, function (data) {
+                            //获取返回的数据并进行操作
+                            alert(data.res);
+                        })
+                    }
+                } else {
+                    alert("硬币数必须是正整数！");
+                }
+            });
+        });
+    </script>
+    <script src="{% static 'lib/form-component.js' %}"></script>
+{% endblock %}
