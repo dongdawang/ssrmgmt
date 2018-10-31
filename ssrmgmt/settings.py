@@ -66,7 +66,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'ssrmgmt.urls'
 
-LOGOUT_REDIRECT_URL = "index"
+LOGOUT_REDIRECT_URL = "/"
 
 TEMPLATES = [
     {
@@ -159,6 +159,9 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# 账户激活域名
+USER_DOMAIN = "localhost:8000"
 
 # 邮箱设置
 EMAIL_HOST = "smtp.163.com"

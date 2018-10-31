@@ -1,0 +1,144 @@
+{% extends 'backend/bebase.html' %}
+{% load static %}
+
+{% block title %}
+    <title>SSRMGMT-节点详情</title>
+{% endblock %}
+
+{% block other_link %}
+    <link rel="stylesheet" href="http://cdn.oesmith.co.uk/morris-0.4.3.min.css">
+    <script src="{% static 'lib/chart-master/Chart.js' %}"></script>
+{% endblock %}
+
+{% block main_content %}
+    <section id="main-content">
+        <section class="wrapper site-min-height">
+            <h3><i class="fa fa-angle-right"></i> 节点详细信息 </h3>
+            <!-- page start-->
+            <div class="row mt">
+                <div class="col-lg-4 col-md-4 col-sm-4 mb">
+                    <div class="weather-3 pn centered" style="background: #b3daff;">
+                        <i class="fa fa-male"></i>
+                        <h1>40 %</h1>
+                        <div class="info">
+                            <div class="row">
+                                <h3 class="centered">在线率</h3>
+                                <div class="col-sm-6 col-xs-6 pull-left">
+                                    <p class="goleft"><i class="fa fa-tint"></i> 13%</p>
+                                </div>
+                                <div class="col-sm-6 col-xs-6 pull-right">
+                                    <p class="goright"><i class="fa fa-flag"></i> 15 MPH</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4 mb">
+                    <!-- WHITE PANEL - TOP USER -->
+                    <div class="white-panel pn">
+                        <div class="white-header">
+                            <h5>TOP USER</h5>
+                        </div>
+                        <!--<p><img src="img/ui-zac.jpg" class="img-circle" width="50"></p>-->
+                        <p><b>Zac Snider</b></p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="small mt">MEMBER SINCE</p>
+                                <p>2012</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="small mt">TOTAL SPEND</p>
+                                <p>$ 47,60</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-4 mb">
+                    <div class="grey-panel pn donut-chart">
+                        <div class="grey-header">
+                            <h5>SERVER LOAD</h5>
+                        </div>
+                        <canvas id="serverstatus01" height="120" width="120"></canvas>
+                        <script>
+                            var doughnutData = [{
+                                value: 70,
+                                color: "#FF6B6B"
+                            },
+                                {
+                                    value: 30,
+                                    color: "#fdfdfd"
+                                }
+                            ];
+                            var myDoughnut = new Chart(document.getElementById("serverstatus01").getContext("2d")).Doughnut(doughnutData);
+                        </script>
+                        <div class="row">
+                            <div class="col-sm-6 col-xs-6 goleft">
+                                <p>Usage<br/>Increase:</p>
+                            </div>
+                            <div class="col-sm-6 col-xs-6">
+                                <h2>21%</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /grey-panel -->
+                </div>
+            </div>
+            <div class="row mt">
+                <div class="col-lg-12">
+                    <div class="content-panel">
+                        <h4><i class="fa fa-angle-right"></i> 节点流量使用情况 </h4>
+                        <div class="panel-body">
+                            <div id="hero-area" class="graph"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- page end-->
+        </section>
+    </section>
+{% endblock %}
+
+{% block otherscript %}
+    <script src="{% static "lib/raphael/raphael.min.js" %}"></script>
+    <script src="{% static "lib/morris/morris.min.js" %}"></script>
+    <script type="text/javascript">
+        var Script = function () {
+            $(function () {
+                Morris.Area({
+                    element: 'hero-area',
+                    data: [
+                        {% for data in usages %}
+                            {
+                                day: "{{ data.x|date:"Y-m-d" }}",
+                                download: {{ data.yd }},
+                                upload: {{ data.yu }},
+                                total: {{data.yd}}+{{ data.yu }}
+                            },
+                        {% endfor %}
+                    ],
+                    xkey: 'day',
+                    ykeys: ['download', 'upload', 'total'],
+                    labels: ['下载(m)', '上传(m)', '总使用(m)'],
+                    /*xLabelFormat: function (d) {
+                        if (d.day % 3 === 0) {
+                            return d
+                        } else {
+                            return ""
+                        }
+                    },*/
+                    //xLabelAngle: 45,
+                    hideHover: 'auto',
+                    lineWidth: 1,
+                    pointSize: 5,
+                    lineColors: ['#4a8bc2', '#ff6c60', '#a9d86e'],
+                    fillOpacity: 0.5,
+                    smooth: true,
+                    parse_time: false
+                });
+                $('.code-example').each(function (index, el) {
+                    eval($(el).text());
+                });
+            });
+        }();
+    </script>
+{% endblock %}

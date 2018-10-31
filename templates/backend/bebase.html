@@ -38,11 +38,11 @@
             <div class="fa fa-bars tooltips" data-placement="right" data-original-title="Toggle Navigation"></div>
         </div>
         <!--logo start-->
-        <a href="#" class="logo"><b><span>SSR</span>MGMT</b></a>
+        <a href="{% url 'index' %}" class="logo"><b><span>SSR</span>MGMT</b></a>
         <!--logo end-->
         <div class="top-menu">
             <ul class="nav pull-right top-menu">
-                <li><a class="logout" href="login.html">Logout</a></li>
+                <li><a class="logout" href="{% url 'users:logout' %}">Logout</a></li>
             </ul>
         </div>
     </header>
@@ -55,56 +55,56 @@
         <div id="sidebar" class="nav-collapse ">
             <!-- sidebar menu start-->
             <ul class="sidebar-menu" id="nav-accordion">
-                <p class="centered"><a href="{% url 'users:profile-show' %}"><img src="{{ MEDIA_URL }}{{ request.user.profile_photo }}" class="img-circle" width="80"></a>
+                <p class="centered"><a href="{% url 'users:profile-show' %}"><img
+                        src="{{ MEDIA_URL }}{{ request.user.profile_photo }}" class="img-circle" width="80"></a>
                 </p>
                 <h5 class="centered">{{ request.user.username }}</h5>
                 <li class="mt">
-                    <a class="active" href="{% url 'index' %}">
-                        <i class="fa fa-dashboard"></i>
+                    <a id="as-system" href="{% url 'users:system' %}">
+                        <i class="fa fa-cogs"></i>
                         <span>系统</span>
                     </a>
                 </li>
                 <li class="sub-menu">
-                    <a href="javascript:;">
-                        <i class="fa fa-desktop"></i>
+                    <a id="as-my" href="javascript:;">
+                        <i class="fa fa-user"></i>
                         <span>我的</span>
                     </a>
                     <ul class="sub">
-                        <li><a href="{% url 'users:profile-center' %}">用户中心</a></li>
-                        <li><a href="{% url 'users:profile-show' %}">账户资料</a></li>
-                        <li><a href="{% url 'users:account_edit' %}">资料编辑</a></li>
-                        <li><a href="{% url 'users:workorder-show' %}">用户工单</a></li>
+                        <li><a id="as-center" href="{% url 'users:profile-center' %}">用户中心</a></li>
+                        <li><a id="as-account" href="{% url 'users:profile-show' %}">账户资料</a></li>
+                        <li><a id="as-edit" href="{% url 'users:account_edit' %}">资料编辑</a></li>
+                        <li><a id="as-workorder" href="{% url 'users:workorder-show' %}">用户工单</a></li>
                     </ul>
                 </li>
                 <li class="sub-menu">
-                    <a href="javascript:;">
-                        <i class="fa fa-cogs"></i>
+                    <a id="as-coin" href="javascript:;">
+                        <i class="fa fa-money"></i>
                         <span>硬币</span>
                     </a>
                     <ul class="sub">
-                        <li><a href="grids.html">答题赚取硬币</a></li>
-                        <li><a href="calendar.html">邀请赚取硬币</a></li>
+                        <li><a id="as-answer" href="#">答题赚取硬币</a></li>
+                        <li><a id="as-invite" href="#">邀请赚取硬币</a></li>
                     </ul>
                 </li>
                 <li class="sub-menu">
-                    <a href="javascript:;">
-                        <i class="fa fa-book"></i>
+                    <a id="as-buy" href="javascript:;">
+                        <i class="fa fa-suitcase"></i>
                         <span>购买</span>
                     </a>
                     <ul class="sub">
-                        <li><a href="{% url 'users:buy-time' %}">购买时长</a></li>
-                        <li><a href="{% url 'users:record-show' %}">购买记录</a></li>
+                        <li><a id="as-time" href="{% url 'users:buy-time' %}">购买时长</a></li>
+                        <li><a id="as-record" href="{% url 'users:record-show' %}">购买记录</a></li>
                     </ul>
                 </li>
                 <li class="sub-menu">
-                    <a href="javascript:;">
+                    <a id="as-use" href="javascript:;">
                         <i class="fa fa-tasks"></i>
                         <span>使用</span>
                     </a>
                     <ul class="sub">
-                        <li><a href="{% url 'node:node-show' %}">节点列表</a></li>
-                        <li><a href="advanced_form_components.html">使用教程</a></li>
-                        <li><a href="form_validation.html">修改节点</a></li>
+                        <li><a id="as-list" href="{% url 'node:node-show' %}">节点列表</a></li>
+                        <li><a id="as-tutorial" href="{% url 'users:tutorial' %}">使用教程</a></li>
                     </ul>
                 </li>
             </ul>
@@ -147,6 +147,61 @@
 <!--script for this page-->
 <script src="{% static "lib/sparkline-chart.js" %}"></script>
 <script src="{% static "lib/zabuto_calendar.js" %}"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var title = $(document).attr("title");
+        if (title === "SSRMGMT-系统") {
+            $('#as-system').addClass("active");
+        } else if (title === "SSRMGMT-用户中心") {
+            $('#as-my').addClass("active");
+            $('#as-my').click();
+            $('#as-center').parent().addClass("active");
+        } else if (title === "SSRMGMT-账户资料") {
+            $('#as-my').addClass("active");
+            $('#as-my').click();
+            $('#as-account').parent().addClass("active");
+        } else if (title === "SSRMGMT-资料编辑") {
+            $('#as-my').addClass("active");
+            $('#as-my').click();
+            $('#as-edit').parent().addClass("active");
+        } else if (title === "SSRMGMT-用户工单") {
+            $('#as-my').addClass("active");
+            $('#as-my').click();
+            $('#as-workorder').parent().addClass("active");
+        } else if (title === "SSRMGMT-答题赚取硬币") {
+            $('#as-coin').addClass("active");
+            $('#as-coin').click();
+            $('#as-answer').parent().addClass("active");
+        } else if (title === "SSRMGMT-邀请赚取硬币") {
+            $('#as-coin').addClass("active");
+            $('#as-coin').click();
+            $('#as-invite').parent().addClass("active");
+        } else if (title === "SSRMGMT-购买时长") {
+            $('#as-buy').addClass("active");
+            $('#as-buy').click();
+            $('#as-time').parent().addClass("active");
+        } else if (title === "SSRMGMT-购买记录") {
+            $('#as-buy').addClass("active");
+            $('#as-buy').click();
+            $('#as-record').parent().addClass("active");
+        } else if (title === "SSRMGMT-节点列表") {
+            $('#as-use').addClass("active");
+            $('#as-use').click();
+            $('#as-list').parent().addClass("active");
+        } else if (title === "SSRMGMT-节点详情") {
+            $('#as-use').addClass("active");
+            $('#as-use').click();
+            $('#as-list').parent().addClass("active");
+        }
+        else if (title === "SSRMGMT-使用教程") {
+            $('#as-use').addClass("active");
+            $('#as-use').click();
+            $('#as-tutorial').parent().addClass("active");
+        } else if (title === "SSRMGMT-修改节点") {
+
+        }
+    });
+</script>
 {% block otherscript %}{% endblock %}
 </body>
 </html>

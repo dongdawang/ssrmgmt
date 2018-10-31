@@ -30,7 +30,7 @@ def send_type_email(email, send_type='register'):
             status = send_mail(email_title, email_body, settings.EMAIL_FROM, [email])
             if status:
                 # 发送成功就把验证码存入redis，有效时间
-                cache.set(key, verify_code, 60 * 60 * 15)
+                cache.set(key, verify_code, 60 * 15)
                 return "email_send_ok"
             else:
                 return "email_send_fail"
@@ -46,11 +46,46 @@ def send_type_email(email, send_type='register'):
             status = send_mail(email_title, email_body, settings.EMAIL_FROM, [email])
             if status:
                 # 发送成功就把验证码存入redis，有效时间
-                cache.set(key, verify_code, 60 * 60 * 15)
+                cache.set(key, verify_code, 60 * 15)
                 return "email_send_ok"
             else:
                 return "email_send_fail"
 
+
+def send_active_email(email):
+    verify_code = create_code(4)
+    key = email
+    link = settings.USER_DOMAIN + r"/users/activate" + "?email={}&code={}".format(email, verify_code)
+    if key in cache:
+        return "resend"
+    else:
+        email_title = "SSRMGMT用户激活邮件"
+        email_body = "激活链接:{0}\n有效时间1小时".format(link)
+        status = send_mail(email_title, email_body, settings.EMAIL_FROM, [email])
+        if status:
+            # 发送成功就把验证码存入redis，有效时间
+            cache.set(key, verify_code, 60 * 60)
+            return "ok"
+        else:
+            return "fail"
+
+
+def send_reset_pwd_email(email):
+    verify_code = create_code(4)
+    key = email + "_resetpwd"
+    link = settings.USER_DOMAIN + r"/users/resetpwd" + "?email={}&code={}".format(email, verify_code)
+    if key in cache:
+        return "resend"
+    else:
+        email_title = "SSRMGMT重置密码"
+        email_body = "重置链接:{0}\n有效时间1小时".format(link)
+        status = send_mail(email_title, email_body, settings.EMAIL_FROM, [email])
+        if status:
+            # 发送成功就把验证码存入redis，有效时间
+            cache.set(key, verify_code, 60 * 60)
+            return "ok"
+        else:
+            return "fail"
 
 # if __name__ == '__main__':
 #     print(create_code(4))

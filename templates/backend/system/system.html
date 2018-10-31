@@ -7,29 +7,32 @@
         <section class="wrapper">
             <div class="row">
                 <div class="col-lg-12">
-                    <!--CUSTOM CHART START -->
-                    <div class="border-head">
-                        <br><!--<h3>公告</h3>-->
-                    </div>
-                    <!-- DIRECT MESSAGE PANEL -->
-                    <div class="col-md-12 mb">
-                        <div class="message-p pn">
-                            <div class="message-header">
-                                <h4>公告</h4>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-9">
-                                    <p>
-                                        <name>Dong Dawang</name>
-                                        发布信息
-                                    </p>
-                                    <p class="message">这个网站是为了方便管理SSR建立的，不以任何手段获取利益。</p>
+                    <div class="row mt">
+                        <!--CUSTOM CHART START -->
+                        <div class="border-head">
+                            <br><!--<h3>公告</h3>-->
+                        </div>
+                        <!-- DIRECT MESSAGE PANEL -->
+                        <div class="col-md-12 mb">
+                            <div class="message-p pn">
+                                <div class="message-header">
+                                    <h4>公告</h4>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        <p>
+                                            <name>Dong Dawang</name>
+                                            发布信息
+                                        </p>
+                                        <p class="message">这个网站是为了方便管理SSR建立的，不以任何手段获取利益。</p>
+                                    </div>
                                 </div>
                             </div>
+                            <!-- /Message Panel-->
                         </div>
-                        <!-- /Message Panel-->
+                        <!--custom chart end-->
                     </div>
-                    <!--custom chart end-->
+
                     <div class="row mt">
                         <!-- SERVER STATUS PANELS -->
                         <div class="col-md-4 col-sm-4 mb">
@@ -127,7 +130,7 @@
                 // (string | mandatory) the text inside the notification
                 text: '有任何不懂的可以聊天室询问其他用户或者提交工单.',
                 // (string | optional) the image to display on the left
-                image: '{% static 'img/ui-sam.jpg' %}',
+                {#image: '{% static 'img/ui-sam.jpg' %}',#}
                 // (bool | optional) if you want it to fade out on its own or just sit there
                 sticky: false,
                 // (int | optional) the time you want it to be alive for before fading out

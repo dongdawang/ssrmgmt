@@ -2,20 +2,23 @@ from django.urls import path
 from django.contrib.auth.views import logout
 from django.conf import settings
 
-from .views import (Index, Login, Register, Profile, ModifyPwd, SendEmailCode, UserCharts, ModifyShow,
-                    AccountEdit, AccountProfilePhotoModify, AccountPwdModify, AccountGeneralModify,
+from .views import (Index, Login, Register, Profile, SendEmailCode, System, Activate, ResetPwd,
+                    AccountEdit, AccountProfilePhotoModify, AccountPwdModify, AccountGeneralModify, ResetPwdEmail,
                     AccountNameModify, AccountSSRModify, AccountEmailModify, ProfileShow, ProfileCenter,
-                    WorkOrderShow, WorkOrderAdd, WorkorderView, WorkorderDelete, BuyTime, TradeRecodeShow)
+                    WorkOrderShow, WorkOrderAdd, WorkorderView, WorkorderDelete, BuyTime, TradeRecodeShow,
+                    Tutorial)
 
 
 urlpatterns = [
     path('login/', Login.as_view(), name='login'),
     path('logout/', logout, {'next_page': settings.LOGOUT_REDIRECT_URL}, name="logout"),
     path('register/', Register.as_view(), name='register'),
+    path('activate/', Activate.as_view(), name='activate'),
+    path('resetpwd/', ResetPwd.as_view(), name='resetpwd'),
+    path('resetpwdemail/', ResetPwdEmail.as_view(), name='resetpwdemail'),
+    path('system/', System.as_view(), name='system'),
     path('profile/', Profile.as_view(), name='profile'),
     path('profile/send-mail', SendEmailCode.as_view(), name='send_mail'),
-    path('profile/charts', UserCharts.as_view(), name='usercharts'),
-    path('profile/modifyshow', ModifyShow.as_view(), name='modifyshow'),
     path('profile/account_edit', AccountEdit.as_view(), name='account_edit'),
     path('account/profile_photo_modify', AccountProfilePhotoModify.as_view(), name="photo_modify"),
     path('account/modify-pwd', AccountPwdModify.as_view(), name='modify-pwd'),
@@ -30,5 +33,6 @@ urlpatterns = [
     path('workorder/delete/<int:wo_id>', WorkorderDelete.as_view(), name='workorder-delete'),
     path('workorder/view/<int:wo_id>', WorkorderView.as_view(), name='workorder-view'),
     path('buy/time', BuyTime.as_view(), name='buy-time'),
-    path('buy/recordshow', TradeRecodeShow.as_view(), name='record-show')
+    path('buy/recordshow', TradeRecodeShow.as_view(), name='record-show'),
+    path('usage/tutorial/', Tutorial.as_view(), name='tutorial')
 ]

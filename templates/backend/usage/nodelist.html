@@ -1,4 +1,5 @@
 {% extends 'backend/bebase.html' %}
+{% load static %}
 
 {% block title %}
     <title>SSRMGMT-节点列表</title>
@@ -8,41 +9,104 @@
     <section id="main-content">
         <section class="wrapper">
             <!-- row -->
-            <div class="row mt">
+            <div class="row mt mb">
                 <div class="col-md-12">
-                    <div class="showback">
-                        <h4><i class="fa fa-angle-right"></i>节点列表</h4>
-                        <div class="alert" style="color: #383d41; background-color: #e2e3e5; border-color: #d6d8db">
-                            <div class="row">
-                                <div class="col-xs-6 col-md-3">名称</div>
-                                <div class="col-xs-6 col-md-2"><strong>IP</strong></div>
-                                <div class="col-xs-6 col-md-1"><strong>online</strong></div>
-                                <div class="col-xs-6 col-md-2"><strong>人数</strong></div>
-                                <div class="col-xs-6 col-md-1"><a href="#">详情</a></div>
-                                <div class="col-xs-6 col-md-1"><a href="#">详情</a></div>
-                                <div class="col-xs-6 col-md-2"></div>
+                    <section class="task-panel tasks-widget">
+                        <div class="panel-heading">
+                            <div class="pull-left">
+                                <h5><i class="fa fa-tasks"></i> SSR-节点列表</h5>
+                            </div>
+                            <br>
+                        </div>
+                        <div class="panel-body">
+                            <div class="task-content">
+                                <ul id="sortable" class="task-list">
+                                    <li class=""
+                                        style="color: #383d41;background-color: #d9edf7;border-color: #d6d8db;">
+                                        <div class="row task-title">
+                                            <div class="col-md-3 col-sm-6"><span
+                                                    style="font-size: medium;font-weight: bold">节点名</span></div>
+                                            <div class="col-md-2 col-sm-6"><span
+                                                    style="font-size: medium;font-weight: bold">节点IP</span></div>
+                                            <div class="col-md-1 col-sm-6"><span
+                                                    style="font-size: medium;font-weight: bold">节点人数</span></div>
+                                            <div class="col-md-2 col-sm-6"><span
+                                                    style="font-size: medium;font-weight: bold">节点状态</span></div>
+                                            <div class="col-md-2 col-sm-6"><span
+                                                    style="font-size: medium;font-weight: bold">节点详情</span></div>
+                                            <div class="col-md-2 col-sm-6"><span
+                                                    style="font-size: medium;font-weight: bold">选择节点</span></div>
+                                        </div>
+                                    </li>
+                                    {% for foo in node_info %}
+                                        <li class="list-primary">
+                                            <div class="row task-title" style="font-weight: bold">
+                                                <div class="col-md-3 col-sm-6">{{ foo.node.name }}</div>
+                                                <div class="col-md-2 col-sm-6">{{ foo.node.ip }}</div>
+                                                <div class="col-md-1 col-sm-6"><i class="fa fa-male">{{ foo.count }}</i></div>
+                                                <div class="col-md-2 col-sm-6">
+                                                    {% if foo.status == 'online' %}
+                                                        <span class="badge bg-theme">online</span>
+                                                    {% else %}
+                                                        <span class="badge bg-important">offline</span>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="col-md-2 col-sm-6">
+                                                    <a class="btn btn-link btn-xs fa fa-bar-chart-o"
+                                                            href="{% url 'node:node-detail' foo.node.node_id %}"></a>
+                                                </div>
+                                                <div class="col-md-2 col-sm-6">
+                                                    {% if curr_node.node_id == foo.node.node_id %}
+                                                        当前节点
+                                                    {% else %}
+                                                        <button class="btn btn-success btn-xs fa fa-check"
+                                                                onclick="select_node({{ foo.node.node_id }})"></button>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div class=" add-task-row">
+                                <a class="btn btn-success btn-sm pull-left" href="{% url 'node:node-show' %}">刷新</a>
                             </div>
                         </div>
-                        {% for node in nodes %}
-                            <div class="alert alert-info">
-                                <div class="row">
-                                    <div class="col-xs-6 col-md-3">{{ node.name }}</div>
-                                    <div class="col-xs-6 col-md-2"><strong>{{ node.ip }}</strong></div>
-                                    <div class="col-xs-6 col-md-1"><strong>True</strong></div>
-                                    <div class="col-xs-6 col-md-2"><strong></strong></div>
-                                    <div class="col-xs-6 col-md-1"><a href="#">详情</a></div>
-                                    <div class="col-xs-6 col-md-1"><a href="#">详情</a></div>
-                                    <div class="col-xs-6 col-md-2"></div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <!-- /content-panel -->
+                    </section>
                 </div>
-                <!-- /col-md-12 -->
+                <!--/col-md-12 -->
             </div>
             <!-- /row -->
         </section>
     </section>
+{% endblock %}
+
+{% block otherscript %}
+    <script type="text/javascript">
+        function select_node(n_id) {
+            csrf = '{{ csrf_token }}';
+            alert(n_id + csrf);
+            //发起ajax请求，注意csrf攻击
+            $.post("{% url 'node:node-select' %}", {
+                'csrfmiddlewaretoken': csrf,
+                'n_id': n_id
+            }, function (data) {
+                //获取返回的数据并进行操作
+                alert(data.res);
+            })
+        }
+    </script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <script src="{% static 'lib/tasks.js' %}" type="text/javascript"></script>
+    <script>
+        jQuery(document).ready(function () {
+            TaskList.initTaskWidget();
+        });
+
+        $(function () {
+            $("#sortable").sortable();
+            $("#sortable").disableSelection();
+        });
+    </script>
 {% endblock %}
 

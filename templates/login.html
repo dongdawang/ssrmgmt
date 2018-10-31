@@ -70,13 +70,13 @@
                             <h4 class="modal-title">忘记密码 ?</h4>
                         </div>
                         <div class="modal-body">
-                            <p>输入当前邮箱去重置密码.</p>
-                            <input type="text" name="email" placeholder="Email" autocomplete="off"
+                            <p>输入注册邮箱去重置密码.</p>
+                            <input type="text" name="email" placeholder="Email" autocomplete="off" id="email"
                                    class="form-control placeholder-no-fix">
                         </div>
                         <div class="modal-footer">
                             <button data-dismiss="modal" class="btn btn-default" type="button">取消</button>
-                            <button class="btn btn-theme" type="button">提交</button>
+                            <button class="btn btn-theme" type="button" id="sendmail">提交</button>
                         </div>
                     </div>
                 </div>
@@ -96,6 +96,23 @@
         speed: 500
     });
 </script>
+<script>
+        $(function () {
+            //修改一般信息
+            $('#sendmail').click(function () {
+                csrf = '{{ csrf_token }}';
+                email = $('#email').val();
+                //发起ajax请求，注意csrf攻击
+                $.post("{% url 'users:resetpwdemail' %}", {
+                    'csrfmiddlewaretoken': csrf,
+                    'email': email
+                }, function (data) {
+                    //获取返回的数据并进行操作
+                    alert(data.res);
+                })
+            });
+        });
+    </script>
 </body>
 
 </html>

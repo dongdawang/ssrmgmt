@@ -38,14 +38,14 @@
                        name="email" value="" id="email" autofocus>
                 <br>
                 <!--<button class="btn btn-theme btn-send">-->
-                <div class="form-inline">
-                    <input type="text" class="form-control" id="verify_code" name="verify_code" value=""
-                           placeholder="Verify Code">
-                    <div class="input-group-append">
-                        <button class="btn btn-secondary left-side" type="button" id="send_mail">获取验证码</button>
-                    </div>
-                </div>
-                <br>
+{#                <div class="form-inline">#}
+{#                    <input type="text" class="form-control" id="verify_code" name="verify_code" value=""#}
+{#                           placeholder="Verify Code">#}
+{#                    <div class="input-group-append">#}
+{#                        <button class="btn btn-secondary left-side" type="button" id="send_mail">获取验证码</button>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <br>#}
                 <input type="password" class="form-control" placeholder="Password" name="password" value="">
                 <br>
                 <button class="btn btn-theme btn-block" type="submit"><i class="fa fa-lock"></i> 注册
@@ -97,7 +97,7 @@
             csrf = $("input[name='csrfmiddlewaretoken']").val();
             email = $('#email').val();
             email_type = $('#email_type').val();
-            alert(csrf + email + email_type)
+            {#alert(csrf + email + email_type)#}
             //发起ajax请求，注意csrf攻击
             $.post("{% url 'users:send_mail' %}", {
                 'csrfmiddlewaretoken': csrf,

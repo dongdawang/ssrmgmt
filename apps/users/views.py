@@ -17,7 +17,7 @@ from .forms import (UploadProfilePhoto, ModifyPwdForm, ModifyGeneralForm, Modify
 from .models import UserProfile, UserModifyRecord, SSRAccount, WorkOrder, DataUsageRecord, TradeRecord
 from node.models import Node
 from apps.utils.mixin import LoginRequireMixin
-from apps.utils.email_send import send_type_email, create_code
+from apps.utils.email_send import send_type_email, create_code, send_active_email, send_reset_pwd_email
 
 from apps.utils.nets import get_host_ip_cache
 from apps.utils.constants import METHOD_CHOICES, PROTOCOL_CHOICES, OBFS_CHOICES
@@ -31,7 +31,13 @@ class Index(View):
             'servers': "",
             'ip': get_host_ip_cache(),
         }
-        return render(request, 'backend/system/system.html', data)
+        return render(request, 'backend/index.html', data)
+
+
+class System(LoginRequireMixin, View):
+    """进入用户中心入口"""
+    def get(self, request):
+        return render(request, 'backend/system/system.html', {})
 
 
 class Register(View):
@@ -44,35 +50,110 @@ class Register(View):
 
     def post(self, request):
         email = request.POST.get('email')
-        verify_code = request.POST.get('verify_code')
         password = request.POST.get('password')
 
-        if email in cache:
-            verify_code_cache = cache.get(email)
+        # 判断邮箱是否被注册过
+        users = UserProfile.objects.filter(email=email)
+        if users:
+            return render(request, 'register.html', {'result': '邮箱已被注册'})
         else:
-            verify_code_cache = ""
-        if verify_code == verify_code_cache:
-            # username和email都是unique，所以username必须随机一个避免重复
-            user = UserProfile(username=create_code(8), email=email)
-            user.set_password(password)  # 通过hash和加salt的方式加密
-            user.save()  # save操作执行写入数据库的操作，之后才算注册成功
+            # 发送下邮箱验证码
+            res = send_active_email(email)
+            if res == "resend":
+                return render(request, 'register.html', {'result': '激活邮件已发送，请不要重复注册'})
+            elif res == "fail":
+                return render(request, 'register.html', {'result': '用户激活邮件发送失败'})
+            else:
+                # username和email都是unique，所以username必须随机一个避免重复
+                user = UserProfile(username=create_code(8), email=email)
+                user.set_password(password)  # 通过hash和加salt的方式加密
+                user.is_active = False  # 先将用户设为未激活状态
+                user.save()  # save操作执行写入数据库的操作，之后才算注册成功
 
-            # 创建一个默认的SSR账号
-            ssr = SSRAccount()
-            ssr.port = SSRAccount.available_port()
-            ssr.passwd = "12345"
-            ssr.user = user
-            ssr.node = Node.default_node()
-            ssr.save()
-
+                # 创建一个默认的SSR账号
+                ssr = SSRAccount()
+                ssr.port = SSRAccount.available_port()
+                ssr.passwd = "12345"
+                ssr.user = user
+                ssr.node = Node.default_node()
+                ssr.save()
             # 注册之后，判断下是否注册成功
             user = authenticate(username=email, password=password)
             if user is not None:
                 return render(request, 'register.html', {'result': '注册成功'})
             else:
                 return render(request, 'register.html', {'result': '注册失败'})
+
+
+class Activate(View):
+    """用户激活账号"""
+    def get(self, request):
+        email = request.GET.get("email")
+        code = request.GET.get("code")
+        if email in cache:
+            verify_code_cache = cache.get(email)
         else:
-            return render(request, 'register.html', {'result': '注册失败，验证码不正确！'})
+            verify_code_cache = ""
+        if code == verify_code_cache:
+            try:
+                user = UserProfile.objects.get(email=email)
+                user.is_active = True
+                user.save()
+            except ObjectDoesNotExist:
+                return render(request, 'result.html', {'result': '此邮箱未被注册。'})
+            return render(request, 'result.html', {'result': '用户激活成功。'})
+        else:
+            return render(request, 'result.html', {'result': '此邮箱所对应的验证码不正确。'})
+
+
+class ResetPwdEmail(View):
+    """发送重置密码的邮件"""
+    def post(self, request):
+        email = request.POST.get('email')
+        res = send_reset_pwd_email(email)
+        if res == "resend":
+            return JsonResponse({'res': '请不要重复发送重置密码的邮件！'})
+        elif res == "fail":
+            return JsonResponse({'res': '重置密码邮件发送失败！'})
+        else:
+            return JsonResponse({'res': '重置密码邮件发送成功，请查收！'})
+
+
+class ResetPwd(View):
+    """重置用户密码"""
+    def get(self, request):
+        email = request.GET.get('email')
+        code = request.GET.get('code')
+        params = {
+            'result': None,
+            'email': email,
+            'code': code,
+        }
+        return render(request, 'resetpwd.html', params)
+
+    def post(self, request):
+        pwd1 = request.POST.get('password1')
+        pwd2 = request.POST.get('password2')
+        email = request.POST.get('email')
+        code = request.POST.get('code')
+        if pwd1 == pwd2:
+            key = email + "_resetpwd"
+            if key in cache:
+                verify_code_cache = cache.get(key)
+            else:
+                verify_code_cache = ""
+            if code == verify_code_cache:
+                try:
+                    user = UserProfile.objects.get(email=email)
+                    user.set_password(pwd1)
+                    user.save()
+                except ObjectDoesNotExist:
+                    return render(request, 'resetpwd.html', {'result': '此邮箱未被注册。'})
+                return render(request, 'resetpwd.html', {'result': '用户密码重置成功。'})
+            else:
+                return render(request, 'resetpwd.html', {'result': '此邮箱所对应的验证码不正确。'})
+        else:
+            return render(request, 'resetpwd.html', {'result': '两次输入的密码不一样'})
 
 
 class Login(View):
@@ -86,8 +167,11 @@ class Login(View):
 
         user = authenticate(username=username, password=password)
         if user is not None:
-            login(request, user)
-            return redirect('/')
+            if user.is_active:
+                login(request, user)
+                return redirect('/')
+            else:
+                return render(request, 'login.html', {'result': '用户未激活'})
         else:
             return render(request, 'login.html', {'result': '登录失败'})
 
@@ -381,32 +465,6 @@ class TradeRecodeShow(LoginRequireMixin, View):
         return render(request, 'backend/buy/records.html', params)
 
 
-class ModifyPwd(LoginRequireMixin, View):
-    """个人中心修改密码
-    """
-    def get(self, request):
-        if request.user is not None:
-            return render(request, 'users/password.html', {})
-        else:
-            return render(request, 'users/error.html', {"error": '请登录后再操作'})
-
-    @record_modify("modify_password")
-    def post(self, request):
-        modify_form = ModifyPwdForm(request.POST)
-        # form表单中定义了，必须是符合form表单的才算是有效表单，比如密码长度要大于5
-        if modify_form.is_valid():
-            pwd1 = request.POST.get("password1", "")
-            pwd2 = request.POST.get("password2", "")
-            if pwd1 != pwd2:
-                return JsonResponse({"res": "两个密码不一样"})
-            user = request.user
-            user.password = make_password(pwd2)
-            user.save()
-            return JsonResponse({"res": "密码修改成功！"})
-        else:
-            return JsonResponse({"res": "form表单无效"})
-
-
 class SendEmailCode(View):
     """发送邮箱验证码
     """
@@ -428,52 +486,7 @@ class SendEmailCode(View):
                 return JsonResponse({'res': 'unknown'})
 
 
-class UserCharts(LoginRequireMixin, View):
-    """管理用户的图表
-    """
+class Tutorial(LoginRequireMixin, View):
+    """显示使用教程"""
     def get(self, request):
-        user = request.user
-        times = ['最近一天', '最近一周', '最近一个月']
-        dct = {
-            'accounts': "",
-            'times': times
-        }
-        return render(request, 'users/charts.html', dct)
-
-    def post(self, request):
-        # user = request.user
-        # times = ['最近一天', '最近一周', '最近一个月']
-        # account_name = request.POST.get('account')
-        # if account:
-        #     account = account[0]
-        # time = request.POST.get('time')
-        # line = bar()
-        # # 定制图表
-        # if time == '最近一天':
-        #     now = datetime.now()
-        #     # now = datetime(2018, 8, 17, 0)
-        #     start = now - timedelta(days=1)
-        #     stop = now
-        #     step = timedelta(hours=1)
-        #     line = get_brand_usage_line(account, start, stop, step)
-        # dct = {
-        #     'accounts': accounts,
-        #     'times': times,
-        #     "myechart": line.render_embed(),
-        #     "host": "https://pyecharts.github.io/assets/js",
-        #     "script_list": line.get_js_dependencies(),
-        #     "error": '请登录后再操作',
-        # }
-        return render(request, 'users/charts.html', {})
-
-
-class ModifyShow(LoginRequireMixin, View):
-    """显示用户的修改记录"""
-    def get(self, request):
-        user = request.user
-        modifies = UserModifyRecord.objects.filter(user=user)
-        return render(request, 'users/modify.html', {'modifies': modifies})
-
-    def post(self, request):
-        pass
-
+        return render(request, 'backend/usage/tutorial.html', {})

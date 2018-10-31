@@ -78,8 +78,8 @@ class SSRAccount(models.Model):
     @classmethod
     def available_port(cls):
         """返回一个可用的端口"""
-        exist_port = cls.objects.values_list('port')
-        ports = [port for port in range(7000, 8000)]
+        exist_port = cls.objects.values_list('port', flat=True)
+        ports = list(range(7000, 8000))
         return list(set(ports).difference(set(exist_port)))[0]
 
     def __str__(self):
@@ -177,8 +177,8 @@ class DataUsageRecord(models.Model):
             yd = data_usage[0].bytes_received if data_usage else 0
             usage = {
                 "x": d,
-                "yu": int(yu)/1024,
-                "yd": int(yd)/1024,
+                "yu": int(yu)//1024,
+                "yd": int(yd)//1024,
             }
             usages.append(usage)
 

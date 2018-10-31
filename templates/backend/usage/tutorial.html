@@ -1,10 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'backend/bebase.html' %}
+{% load static %}
 
-</body>
-</html>
+{% block title %}
+    <title>SSRMGMT-使用教程</title>
+{% endblock %}
+
+{% block main_content %}
+        <section id="main-content">
+        <section class="wrapper">
+            <div class="col-lg-12 mt">
+                <div class="row content-panel">
+                    <div class="col-lg-10 col-lg-offset-1">
+                        <div class="invoice-body">
+                            <div class="pull-left">
+                                <h1>SSRMGMT使用教程</h1>
+                                <address>
+                                    <strong>dongdawang</strong><br>
+                                </address>
+                                <h3>1. 下载客户端</h3>
+                                <p>
+                                    去https://shadowsocks.org/en/download/clients.html网站中选择合适的客户端下载下来，然后安装
+                                </p>
+                                <h3>2. 配置SSR账号</h3>
+                                <p>
+                                    在[我的]-[资料编辑中]找到修改SSR账号信息<br>
+                                    如果你不知道SSR账号各项参数的意思可以以以下配置，配置SSR账号，<br>
+                                    <img src="{{ MEDIA_URL }}image/ssrconf.PNG" width="500" height="500"><br>
+                                    上图中如果你使用的是shadowsocksr客户端请把混淆勾选上。
+                                </p>
+                                <h3>3. 客户端使用</h3>
+                                <p>
+                                    在账号配置好了之后，在[我的]-[用户中心]中可以看到账号的SS二维码和链接，SSR二维码和链接。<br>
+                                    它们分别对应SS客户端和SSR客户端。点击复制链接可以直接将链接复制。<br>
+                                    右键客户端打开如下界面，然后可以选择[从剪切板导入url], [扫面屏幕上的二维码]两种导入配置的方式。<br>
+                                    任意选择一种即可<br>
+                                    <img src="{{ MEDIA_URL }}image/ssrclient.PNG">
+                                </p>
+                                <h3>4. 验证</h3>
+                                <p>
+                                    最后打开浏览器输入www.google.com查看是否可以打开。<br>
+                                    <img src="{{ MEDIA_URL }}image/google.PNG"><br>
+                                </p>
+                            </div>
+                            <!-- /col-lg-10 -->
+                            <br>
+                            <br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--/col-lg-12 mt -->
+        </section>
+
+        <!-- /wrapper -->
+    </section>
+
+{% endblock %}
+
