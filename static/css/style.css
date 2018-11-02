@@ -255,7 +255,7 @@ ul.top-menu > li > .logout {
 }
 
 /*LEFT NAVIGATION ICON*/
-.dcjq-icon {
+/*.dcjq-icon {
     height:17px;
     width:17px;
     display:inline-block;
@@ -272,7 +272,7 @@ ul.top-menu > li > .logout {
     border-radius:3px;
     -moz-border-radius:3px;
     -webkit-border-radius:3px;
-}
+}*/
 /*---*/
 
 .nav-collapse.collapse {
@@ -696,6 +696,7 @@ ul.top-menu > li > a:hover, ul.top-menu > li > a:focus {
     border-top-color: #000;
 }
 
+/*
 .log-arrow-up {
     background: url("../img/arrow-up.png") no-repeat;
     width: 20px;
@@ -704,6 +705,7 @@ ul.top-menu > li > a:hover, ul.top-menu > li > a:focus {
     right: 20px;
     top: -10px;
 }
+*/
 
 /*----*/
 

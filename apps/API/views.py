@@ -1,13 +1,18 @@
 import json
+import logging
 
 from django.views import View
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.core.cache import cache
+from django.conf import settings
 
 from users.models import UserProfile, SSRAccount, DataUsageRecord
 from node import models
+from apps.utils.mixin import VerifyAPITokenMixin
+
+import jwt
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -60,7 +65,7 @@ class User(View):
 
 
 @method_decorator(csrf_exempt, name="dispatch")
-class NodeAlive(View):
+class NodeAlive(VerifyAPITokenMixin, View):
     """更新节点是否在线"""
     def post(self, request):
         try:
@@ -129,3 +134,27 @@ class NodeTransfer(View):
                 return JsonResponse({'res': 'fail'})
         except Exception as e:
             return JsonResponse({'res': 'fail'})
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class GenerateToken(View):
+    """生成API授权token"""
+    def post(self, request):
+        body = json.loads(request.body.decode("utf-8"))
+        try:
+            username = body['username']
+            password = body['password']
+            if (username == settings.API_USERNAME
+                    and password == settings.API_PASSWORD):
+                payload = {
+                    'iss': 'ssrmgmt',
+                    'name': 'mgr',
+                }
+                token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+                return JsonResponse({'result': 'success', 'access_token': token.decode('utf-8')})
+            else:
+                return JsonResponse({'result': 'fail'})
+        except Exception as e:
+            logging.error("""生成api授权token时出现错误:{}""".format(e))
+            return JsonResponse({'result': 'error'})
+

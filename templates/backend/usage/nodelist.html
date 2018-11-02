@@ -85,7 +85,6 @@
     <script type="text/javascript">
         function select_node(n_id) {
             csrf = '{{ csrf_token }}';
-            alert(n_id + csrf);
             //发起ajax请求，注意csrf攻击
             $.post("{% url 'node:node-select' %}", {
                 'csrfmiddlewaretoken': csrf,

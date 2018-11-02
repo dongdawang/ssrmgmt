@@ -163,6 +163,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # 账户激活域名
 USER_DOMAIN = "localhost:8000"
 
+# API相关
+API_USERNAME = 'name'
+API_PASSWORD = 'pwd'
+
 # 邮箱设置
 EMAIL_HOST = "smtp.163.com"
 EMAIL_HOST_USER = "ssrmgmt@163.com"

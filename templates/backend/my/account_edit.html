@@ -425,7 +425,6 @@
                 method = $('#method').val();
                 protocol = $('#protocol').val();
                 obfs = $('#obfs').val();
-                alert(method + protocol + obfs + obfs_enable);
                 //发起ajax请求，注意csrf攻击
                 $.post("{% url 'users:modify-ssr' %}", {
                     'csrfmiddlewaretoken': csrf,
@@ -447,7 +446,6 @@
             $('#send_email').click(function () {
                 email = $('#email').val();
                 email_type = $('#email_type').val();
-                alert(email + email_type);
                 //发起ajax请求，注意csrf攻击
                 $.post("{% url 'users:send_mail' %}", {
                     'csrfmiddlewaretoken': '{{ csrf_token }}',
@@ -477,7 +475,6 @@
             $('#modify_email').click(function () {
                 email = $('#email').val();
                 verify_code = $('#verify').val();
-                alert(email);
                 //发起ajax请求，注意csrf攻击
                 $.post("{% url 'users:modify-email' %}", {
                     'csrfmiddlewaretoken': '{{ csrf_token }}',
