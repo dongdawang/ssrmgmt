@@ -1,5 +1,6 @@
 import functools
 import types
+import logging
 from datetime import datetime, timedelta
 
 from django.contrib.auth import authenticate, login
@@ -19,18 +20,20 @@ from node.models import Node
 from apps.utils.mixin import LoginRequireMixin
 from apps.utils.email_send import send_type_email, create_code, send_active_email, send_reset_pwd_email
 
-from apps.utils.nets import get_host_ip_cache
 from apps.utils.constants import METHOD_CHOICES, PROTOCOL_CHOICES, OBFS_CHOICES
-from apps.utils.ssrmgr import SS, SSR
 
 
 class Index(View):
 
     def get(self, request):
-        data = {
-            'servers': "",
-            'ip': get_host_ip_cache(),
-        }
+        try:
+            user = request.user
+            ssr = SSRAccount.objects.get(user=user)
+            data = {
+                'ssr': ssr
+            }
+        except Exception as e:
+            data = {}
         return render(request, 'backend/index.html', data)
 
 
@@ -75,6 +78,10 @@ class Register(View):
                 ssr.port = SSRAccount.available_port()
                 ssr.passwd = "12345"
                 ssr.user = user
+                ssr.method = "aes-128-ctr"
+                ssr.protocol = "auth_sha1_v4"
+                ssr.obfs = "tls1.2_ticket_auth"
+                ssr.compatible = True
                 ssr.node = Node.default_node()
                 ssr.save()
             # 注册之后，判断下是否注册成功
@@ -297,18 +304,18 @@ class AccountSSRModify(LoginRequireMixin, View):
             method = request.POST.get('method')
             protocol = request.POST.get('protocol')
             obfs = request.POST.get('obfs')
-            obfs_enable = request.POST.get('obfs_enable')
-            if obfs_enable == "true":
-                obfs_enable = True
+            compatible = request.POST.get('compatible')
+            if compatible == "true":
+                compatible = True
             else:
-                obfs_enable = False
+                compatible = False
             user = request.user
             ssr = SSRAccount.objects.get(user=user)
             ssr.passwd = passwd
             ssr.method = method
             ssr.protocol = protocol
             ssr.obfs = obfs
-            ssr.obfs_enable = obfs_enable
+            ssr.compatible = compatible
             ssr.save()
             return JsonResponse({"res": "SSR配置修改成功"})
         else:
@@ -352,8 +359,6 @@ class ProfileCenter(LoginRequireMixin, View):
         usages = DataUsageRecord.last_30_days(ssr_account)
         params = {
             'ssr_account': ssr_account,
-            'ss': SS(ssr_account),
-            'ssr': SSR(ssr_account),
             'usages': usages,
         }
         return render(request, 'backend/my/center.html', params)
@@ -447,6 +452,7 @@ class BuyTime(LoginRequireMixin, View):
             ssr.save()
             trade.save()
         except ObjectDoesNotExist as ex:
+            logging.error("购买时长出错:{}".format(ex))
             return JsonResponse({"res": "购买时长出错！"})
 
         return JsonResponse({

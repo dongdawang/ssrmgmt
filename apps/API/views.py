@@ -16,9 +16,10 @@ import jwt
 
 
 @method_decorator(csrf_exempt, name="dispatch")
-class User(View):
-    """SSR服务器用户相关的API"""
-
+class User(VerifyAPITokenMixin, View):
+    """
+    SSR服务器用户相关的API
+    """
     def get(self, request):
         node_id = request.GET.get("node_id")
         ssrs = SSRAccount.objects.filter(node__node_id=node_id)
@@ -33,8 +34,8 @@ class User(View):
                     "port": ssr.port,
                     "passwd": ssr.passwd,
                     "method": ssr.method,
-                    "protocol": ssr.protocol,
-                    "obfs": ssr.obfs,
+                    "protocol": ssr.protocol+"_compatible" if ssr.compatible else ssr.protocol,
+                    "obfs": ssr.obfs+"_compatible" if ssr.compatible else ssr.obfs,
                     "expiration_time": ssr.expiration_time,
                     "node_id": node_id,
                 }
@@ -55,8 +56,8 @@ class User(View):
                     "port": ssr.port,
                     "passwd": ssr.passwd,
                     "method": ssr.method,
-                    "protocol": ssr.protocol,
-                    "obfs": ssr.obfs,
+                    "protocol": ssr.protocol+"_compatible" if ssr.compatible else ssr.protocol,
+                    "obfs": ssr.obfs+"_compatible" if ssr.compatible else ssr.obfs,
                     "expiration_time": ssr.expiration_time,
                     "node_id": node_id,
                 }
@@ -66,7 +67,9 @@ class User(View):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class NodeAlive(VerifyAPITokenMixin, View):
-    """更新节点是否在线"""
+    """
+    更新节点是否在线
+    """
     def post(self, request):
         try:
             node_status = json.loads(request.body.decode("utf-8"))
@@ -91,8 +94,10 @@ class NodeAlive(VerifyAPITokenMixin, View):
 
 
 @method_decorator(csrf_exempt, name="dispatch")
-class Transfer(View):
-    """存储用户流量信息"""
+class Transfer(VerifyAPITokenMixin, View):
+    """
+    存储用户流量信息
+    """
     def post(self, request):
         datas = json.loads(request.body.decode("utf-8"))
         datas = datas['datas']
@@ -113,8 +118,10 @@ class Transfer(View):
 
 
 @method_decorator(csrf_exempt, name="dispatch")
-class NodeTransfer(View):
-    """存储主机流量"""
+class NodeTransfer(VerifyAPITokenMixin, View):
+    """
+    存储主机流量
+    """
     def post(self, request):
         node_io = json.loads(request.body.decode("utf-8"))
         node_id = node_io['node_id']

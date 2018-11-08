@@ -1,3 +1,4 @@
+import base64
 from datetime import datetime, timedelta
 
 from django.db import models
@@ -71,7 +72,7 @@ class SSRAccount(models.Model):
                                 default='origin')
     obfs = models.CharField(verbose_name="混淆方法", max_length=30, choices=OBFS_CHOICES,
                             default='plain')
-    obfs_enable = models.BooleanField(verbose_name="是否启用混淆", default=False)
+    compatible = models.BooleanField(verbose_name="是否启用混淆", default=False)
     node = models.ForeignKey(Node, on_delete=models.CASCADE, verbose_name="关联的节点")
     user = models.OneToOneField(UserProfile, on_delete=models.CASCADE, verbose_name="所有用户")
 
@@ -84,6 +85,44 @@ class SSRAccount(models.Model):
 
     def __str__(self):
         return type(self.port)
+
+    @staticmethod
+    def url_safe64(text):
+        text = str(text, encoding='utf-8')
+        text = text.replace(" ", "")
+        text = text.replace("=", "")
+        text = text.replace("+", "-")
+        text = text.replace(r"/", "_")
+        return text
+
+    def ss_base64(self):
+        txt = "{}:{}@{}:{}".format(self.method, self.passwd, self.node.ip, self.port)
+        btxt = bytes(txt, encoding='utf-8')
+        return SSRAccount.url_safe64(base64.b64encode(btxt))
+
+    @property
+    def ss_qrcode(self):
+        return "https://makeai.cn/qr/?m=2&e=H&p=3&url={}".format(self.ss_base64())
+
+    @property
+    def ss_url(self):
+        return "ss://{}".format(self.ss_base64())
+
+    def ssr_base64(self):
+        protocol = self.protocol.replace("_compatible", "")
+        obfs = self.obfs.replace("_compatible", "")
+        pwdbase64 = SSRAccount.url_safe64(base64.b64encode(bytes(self.passwd, encoding='utf8')))
+        txt = "{}:{}:{}:{}:{}:{}".format(self.node.ip, self.port, protocol, self.method, obfs, pwdbase64)
+        btxt = bytes(txt, encoding='utf8')
+        return SSRAccount.url_safe64(base64.b64encode(btxt))
+
+    @property
+    def ssr_qrcode(self):
+        return "https://makeai.cn/qr/?m=2&e=H&p=3&url={}".format(self.ssr_base64())
+
+    @property
+    def ssr_url(self):
+        return "ssr://{}".format(self.ssr_base64())
 
 
 class UserModifyRecord(models.Model):

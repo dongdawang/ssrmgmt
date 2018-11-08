@@ -289,15 +289,15 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="obfs_enable" class="control-label col-lg-2">是否混淆</label>
+                                <label for="compatible" class="control-label col-lg-2">是否兼容原版</label>
                                 <!-- Button trigger modal -->
                                 <div class="col-lg-10">
                                     <div class="switch switch-square" data-on-label="<i class=' fa fa-check'></i>"
                                          data-off-label="<i class='fa fa-times'></i>">
-                                        {% if ssr.obfs_enable %}
-                                            <input type="checkbox" id="obfs_enable" name="obfs_enable" checked/>
+                                        {% if ssr.compatible %}
+                                            <input type="checkbox" id="compatible" name="compatible" checked/>
                                         {% else %}
-                                            <input type="checkbox" id="obfs_enable" name="obfs_enable"/>
+                                            <input type="checkbox" id="compatible" name="compatible"/>
                                         {% endif %}
 
                                     </div>
@@ -415,10 +415,10 @@
         $(function () {
             //修改一般信息
             $('#modify_ssr').click(function () {
-                var obfs_ck = document.getElementById('obfs_enable');
-                var obfs_enable = false;
-                if (obfs_ck.checked) {
-                    obfs_enable = true;
+                var compatible_ck = document.getElementById('compatible');
+                var compatible = false;
+                if (compatible_ck.checked) {
+                    compatible = true;
                 }
                 csrf = '{{ csrf_token }}';
                 passwd = $('#passwd').val();
@@ -432,7 +432,7 @@
                     'method': method,
                     'protocol': method,
                     'obfs': obfs,
-                    'obfs_enable': obfs_enable
+                    'compatible': compatible
                 }, function (data) {
                     //获取返回的数据并进行操作
                     alert(data.res);
