@@ -2,15 +2,15 @@ import json
 import logging
 
 from django.views import View
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from django.core.cache import cache
 from django.conf import settings
 
 from users.models import UserProfile, SSRAccount, DataUsageRecord
 from node import models
 from apps.utils.mixin import VerifyAPITokenMixin
+from apps.utils.nodemgr import NodeStatusCacheMgr
 
 import jwt
 
@@ -66,44 +66,38 @@ class User(VerifyAPITokenMixin, View):
 
 
 @method_decorator(csrf_exempt, name="dispatch")
-class NodeAlive(VerifyAPITokenMixin, View):
+class NodeStatus(VerifyAPITokenMixin, View):
     """
-    更新节点是否在线
+    更新节点状态
     """
     def post(self, request):
         try:
-            node_status = json.loads(request.body.decode("utf-8"))
-            node = node_status['node']
-            status = {
-                'status': node_status['status'],
-                'port_status': node_status['ports']
-            }
-            key = "node_online"
-            if key in cache:
-                node_online = cache.get(key)
-            else:
-                node_online = dict()
-            node_online[node] = status
-            # 设置60s的存活时间，需要节点不断上报数据
-            cache.set('node_online', node_online, 60)
-            print(node_online)
-            return JsonResponse({'res': 'ok'})
+            stat = json.loads(request.body.decode("utf-8"))
+            node_id = stat['node_id']
+            node_status = stat['is_online']
+            port_status = stat['port']
+
+            nscm = NodeStatusCacheMgr()
+            nscm.set_node_status(node_id, node_status)
+
+            for port, ips in port_status.items():
+                nscm.set_port_ips(port, ips)
+
+            return HttpResponse('OK', status=200)
         except KeyError as e:
-            pass
-            return JsonResponse({'res': 'fail'})
+            return HttpResponse('Internal Server Error', status=500)
 
 
 @method_decorator(csrf_exempt, name="dispatch")
-class Transfer(VerifyAPITokenMixin, View):
+class UserTransfer(VerifyAPITokenMixin, View):
     """
     存储用户流量信息
     """
     def post(self, request):
-        datas = json.loads(request.body.decode("utf-8"))
-        datas = datas['datas']
+        usage = json.loads(request.body.decode("utf-8"))
         try:
-            for data in datas:
-                port = data['port']
+            for port, data in usage.items():
+                port = int(port)
                 ssr = SSRAccount.objects.filter(port=port)
                 if ssr:
                     ssr = ssr[0]
@@ -113,8 +107,8 @@ class Transfer(VerifyAPITokenMixin, View):
                     data_usage.bytes_received = data['d']
                     data_usage.save()
         except Exception as e:
-            return JsonResponse({'res': 'fail'})
-        return JsonResponse({'res': 'ok'})
+            return HttpResponse('Internal Server Error', status=500)
+        return HttpResponse('OK', status=200)
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -123,24 +117,23 @@ class NodeTransfer(VerifyAPITokenMixin, View):
     存储主机流量
     """
     def post(self, request):
-        node_io = json.loads(request.body.decode("utf-8"))
-        node_id = node_io['node_id']
-        recv = node_io['recv']
-        sent = node_io['sent']
+        usage = json.loads(request.body.decode("utf-8"))
         try:
-            node = models.Node.objects.filter(node_id=node_id)
-            if node:
-                node = node[0]
-                data_usage = models.DataUsageRecord()
-                data_usage.node = node
-                data_usage.bytes_sent = sent
-                data_usage.bytes_recv = recv
-                data_usage.save()
-                return JsonResponse({'res': 'ok'})
-            else:
-                return JsonResponse({'res': 'fail'})
+            for node_id, data in usage.items():
+                node_id = str(node_id)
+                node = models.Node.objects.filter(node_id=node_id)
+                if node:
+                    node = node[0]
+                    data_usage = models.DataUsageRecord()
+                    data_usage.node = node
+                    data_usage.bytes_sent = data['sent']
+                    data_usage.bytes_recv = data['recv']
+                    data_usage.save()
+                    return HttpResponse('OK', status=200)
+                else:
+                    return JsonResponse('Not Implemented', status=501)
         except Exception as e:
-            return JsonResponse({'res': 'fail'})
+            return HttpResponse('Internal Server Error', status=500)
 
 
 @method_decorator(csrf_exempt, name="dispatch")

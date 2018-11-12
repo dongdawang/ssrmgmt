@@ -84,7 +84,7 @@
         </h1>
         <h3>
             Now!
-            <span class="text-danger">2</span>个节点存活
+            <span class="text-danger">{{ online_node_count }}</span>个节点存活
         </h3>
         {% if request.user.is_authenticated %}
             <div class="row">

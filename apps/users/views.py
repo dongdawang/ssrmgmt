@@ -19,8 +19,9 @@ from .models import UserProfile, UserModifyRecord, SSRAccount, WorkOrder, DataUs
 from node.models import Node
 from apps.utils.mixin import LoginRequireMixin
 from apps.utils.email_send import send_type_email, create_code, send_active_email, send_reset_pwd_email
-
 from apps.utils.constants import METHOD_CHOICES, PROTOCOL_CHOICES, OBFS_CHOICES
+from apps.utils.nodemgr import NodeStatusCacheMgr
+from apps.utils.tools import search_ip_belong
 
 
 class Index(View):
@@ -29,10 +30,19 @@ class Index(View):
         try:
             user = request.user
             ssr = SSRAccount.objects.get(user=user)
+            nscm = NodeStatusCacheMgr()
+            nodes = Node.objects.all()
+            online_node_count = 0
+            for node in nodes:
+                if nscm.get_node_status(node.node_id) == 'online':
+                    online_node_count += 1
+
             data = {
-                'ssr': ssr
+                'ssr': ssr,
+                'online_node_count': online_node_count,
             }
         except Exception as e:
+            logging.error("响应首页请求出错:{}".format(e))
             data = {}
         return render(request, 'backend/index.html', data)
 
@@ -40,7 +50,21 @@ class Index(View):
 class System(LoginRequireMixin, View):
     """进入用户中心入口"""
     def get(self, request):
-        return render(request, 'backend/system/system.html', {})
+        ssr_all = SSRAccount.objects.all()
+        nscm = NodeStatusCacheMgr()
+        total = len(ssr_all)
+        online_count = 0
+        for account in ssr_all:
+            if nscm.get_port_ips(account.port):
+                online_count += 1
+        params = {
+            'user': {
+                'total': total,
+                'online_count': online_count,
+                'online_rate': 0 if total == 0 else online_count*100//total
+            }
+        }
+        return render(request, 'backend/system/system.html', params)
 
 
 class Register(View):
@@ -356,10 +380,18 @@ class ProfileCenter(LoginRequireMixin, View):
     def get(self, request):
         user = request.user
         ssr_account = SSRAccount.objects.get(user=user)
+        nscm = NodeStatusCacheMgr()
+        ip_info = {}
+        ips = nscm.get_port_ips(ssr_account.port)
+        # 查询ip归属地
+        for ip in ips:
+            ip_info.setdefault(ip, search_ip_belong(ip))
+
         usages = DataUsageRecord.last_30_days(ssr_account)
         params = {
             'ssr_account': ssr_account,
             'usages': usages,
+            'ip_info': ip_info
         }
         return render(request, 'backend/my/center.html', params)
 

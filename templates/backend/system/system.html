@@ -36,39 +36,27 @@
                     <div class="row mt">
                         <!-- SERVER STATUS PANELS -->
                         <div class="col-md-4 col-sm-4 mb">
-                            <div class="grey-panel pn donut-chart">
-                                <div class="grey-header">
-                                    <h5>SERVER LOAD</h5>
-                                </div>
-                                <canvas id="serverstatus01" height="120" width="120"></canvas>
-                                <script>
-                                    var doughnutData = [{
-                                        value: 70,
-                                        color: "#FF6B6B"
-                                    },
-                                        {
-                                            value: 30,
-                                            color: "#fdfdfd"
-                                        }
-                                    ];
-                                    var myDoughnut = new Chart(document.getElementById("serverstatus01").getContext("2d")).Doughnut(doughnutData);
-                                </script>
-                                <div class="row">
-                                    <div class="col-sm-6 col-xs-6 goleft">
-                                        <p>Usage<br/>Increase:</p>
-                                    </div>
-                                    <div class="col-sm-6 col-xs-6">
-                                        <h2>21%</h2>
+                            <div class="weather-3 pn centered" style="background: #b3daff;">
+                                <i class="fa fa-male"></i>
+                                <h1>{{ user.online_rate }} %</h1>
+                                <div class="info">
+                                    <div class="row">
+                                        <h3 class="centered">总在线率</h3>
+                                        <div class="col-sm-6 col-xs-6 pull-left">
+                                            <p class="goleft"><i class="fa fa-tint"></i> {{ user.total }} Total</p>
+                                        </div>
+                                        <div class="col-sm-6 col-xs-6 pull-right">
+                                            <p class="goright"><i class="fa fa-flag"></i> {{ user.online }} Online</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <!-- /grey-panel -->
                         </div>
                         <!-- /col-md-4-->
                         <div class="col-md-4 col-sm-4 mb">
                             <div class="darkblue-panel pn">
                                 <div class="darkblue-header">
-                                    <h5>DROPBOX STATICS</h5>
+                                    <h5>现在不用</h5>
                                 </div>
                                 <canvas id="serverstatus02" height="120" width="120"></canvas>
                                 <script>
@@ -100,7 +88,7 @@
                             <!-- REVENUE PANEL -->
                             <div class="green-panel pn">
                                 <div class="green-header">
-                                    <h5>REVENUE</h5>
+                                    <h5>现在不用</h5>
                                 </div>
                                 <div class="chart mt">
                                     <div class="sparkline" data-type="line" data-resize="true" data-height="75"
