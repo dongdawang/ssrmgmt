@@ -6,6 +6,7 @@ dukpy==0.2.0
 eventlet==0.23.0
 future==0.16.0
 greenlet==0.4.13
+gunicorn==19.9.0
 javascripthon==0.10
 Jinja2==2.10
 kombu==4.2.1

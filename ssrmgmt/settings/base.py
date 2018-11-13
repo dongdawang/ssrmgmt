@@ -13,25 +13,30 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 from __future__ import absolute_import, unicode_literals
 import os
 import sys
+import logging
+
+from django.core.exceptions import ImproperlyConfigured
+
+
+def get_env_variable(var_name):
+    try:
+        var = os.environ[var_name]
+        logging.info('[{}={}]'.format(var_name, var))
+        return var
+    except KeyError:
+        error_msg = "Set the [{}] environment variable".format(var_name)
+        raise ImproperlyConfigured(error_msg)
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
-sys.path.insert(0, os.path.join(BASE_DIR, 'apps_extra'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'oa-70f*fdrfz&$_9k8!tk(!nfw_y*j7fs&t=090$pte3c1df#9'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['*']
-
-# Application definition
+SECRET_KEY = get_env_variable('SSRMGMT_SECRET_KEY')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -86,35 +91,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ssrmgmt.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/2.0/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'ssrmgmt',
-        'USER': 'root',
-        'PASSWORD': '123456',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            # 取消外键检查
-            "init_command": "SET foreign_key_checks = 0;",
-        },
-    }
-}
-
-# 设置django使用redis做缓存
-CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        # 'LOCATION': 'redis://db_redis:6379',  # docker部署方式
-        'LOCATION': 'redis://localhost:6379',
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        },
-    },
-}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -134,44 +110,5 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
-# https://docs.djangoproject.com/en/2.0/topics/i18n/
-
-LANGUAGE_CODE = 'zh-hans'
-
-TIME_ZONE = 'Asia/Shanghai'
-
-USE_I18N = True
-
-USE_L10N = True
-
-USE_TZ = False
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.0/howto/static-files/
-
-STATIC_URL = '/static/'
-# STATIC_ROOT = os.path.join(BASE_DIR, "mystatic")
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# 账户激活域名
-USER_DOMAIN = "www.djhmgr.top"
-
-# API相关
-API_USERNAME = 'name'
-API_PASSWORD = 'pwd'
-
-# 邮箱设置
-EMAIL_HOST = "smtp.163.com"
-EMAIL_HOST_USER = "ssrmgmt@163.com"
-EMAIL_HOST_PASSWORD = "ssrmgmt1233"
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = True
-EMAIL_PORT = 465
-EMAIL_FROM = "ssrmgmt@163.com"
-

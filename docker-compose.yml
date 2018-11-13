@@ -3,28 +3,36 @@ version: '3'
 services:
   db_redis:
     image: redis
+    container_name: ssrmgmt_db_redis
     expose: 
       - "6379"
     ports:
       - "6379:6379"
   db_mysql:
     image: mysql:5.6
+    container_name: ssrmgmt_db_mysql
     expose:
       - "3306"
     ports:
       - "3306:3306"
     volumes:
-      - ../smgrdocker/db:/var/lib/mysql
-    environment:
-      - MYSQL_DATABASE=ssrmgmt
-      - MYSQL_ROOT_PASSWORD=123456
+      - ../smgrdocker/mysql_db:/var/lib/mysql
+    env_file:
+      - ./envs/mysql.env
+#    environment:
+#      - MYSQL_DATABASE=ssrmgmt
+#      - MYSQL_ROOT_PASSWORD=123456
   web:
     build: .
-    command: python3 manage.py runserver 0.0.0.0:8000
+    container_name: ssrmgmt_web
+    command: bash -c "gunicorn -b 0.0.0.0:8000 ssrmgmt.wsgi:application"
+#    command: bash -c "nohup ping -i 1000 www.baidu.com"
     volumes:
       - .:/code
     ports:
       - "8000:8000"
+    env_file:
+      - ./envs/web.env
     depends_on:
       - db_mysql
       - db_redis
