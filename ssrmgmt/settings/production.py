@@ -53,7 +53,7 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, "prostatic")
+STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'prostatic')
 
 
 # 账户激活域名

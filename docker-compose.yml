@@ -11,6 +11,7 @@ services:
   db_mysql:
     image: mysql:5.6
     container_name: ssrmgmt_db_mysql
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci --init-connect='SET NAMES utf8;' --innodb-flush-log-at-trx-commit=0
     expose:
       - "3306"
     ports:
