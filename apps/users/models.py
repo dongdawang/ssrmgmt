@@ -84,7 +84,7 @@ class SSRAccount(models.Model):
         return list(set(ports).difference(set(exist_port)))[0]
 
     def __str__(self):
-        return type(self.port)
+        return str(self.port)
 
     @staticmethod
     def url_safe64(text):
