@@ -23,6 +23,24 @@ from apps.utils.constants import METHOD_CHOICES, PROTOCOL_CHOICES, OBFS_CHOICES
 from apps.utils.nodemgr import NodeStatusCacheMgr
 from apps.utils.tools import search_ip_belong
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+
+
+
+
+class UserView(APIView):
+    permission_classes = (IsAuthenticated,)
+    def get(self, request, *args, **kwargs):
+        print(self.authentication_classes)
+        return Response({'user': 'all'})
+
+
+
+
+
+
 
 class Index(View):
 
@@ -45,6 +63,13 @@ class Index(View):
             logging.error("响应首页请求出错:{}".format(e))
             data = {}
         return render(request, 'backend/index.html', data)
+
+
+class AuthView(APIView):
+    # 如果这个类中的方法不需要认证就能够访问，就直接覆盖配置中的认证类列表
+    authentication_classes = []
+
+
 
 
 class System(LoginRequireMixin, View):

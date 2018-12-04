@@ -25,11 +25,14 @@ from users.views import Index
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/<str:version>/', include(('users.urls', 'users'), namespace='users')),
+    path('api/<str:version>/', include(('API.urls', 'API'), namespace='api')),
+    path('api/<str:version>/', include(('node.urls', 'node'), namespace='node')),
     path('', Index.as_view(), name='index'),
     # 创建一个命名空间，可以有效的对url进行分类
-    path('users/', include(("users.urls", "users"), namespace="users")),
-    path('api/', include(("API.urls", "API"), namespace="api")),
-    path('node/', include(("node.urls", "node"), namespace="node")),
+    # path('users/', include(("users.urls", "users"), namespace="users")),
+    # path('api/', include(("API.urls", "API"), namespace="api")),
+    # path('node/', include(("node.urls", "node"), namespace="node")),
     # path('media/<str>', serve, {"document_root": MEDIA_ROOT})
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

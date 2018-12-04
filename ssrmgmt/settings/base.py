@@ -17,6 +17,8 @@ import logging
 
 from django.core.exceptions import ImproperlyConfigured
 
+from .restful import *
+
 
 def get_env_variable(var_name):
     try:
@@ -48,6 +50,7 @@ INSTALLED_APPS = [
     'users',
     'API',
     'node',
+    'rest_framework',
 ]
 
 AUTH_USER_MODEL = 'users.UserProfile'

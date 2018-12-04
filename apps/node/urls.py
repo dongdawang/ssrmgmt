@@ -1,9 +1,9 @@
 from django.urls import path
 
-from .views import NodeShow, NodeDetail, SelectNode
+from .views import SelectNode, NodeView, DetailView
 
 urlpatterns = [
-    path('node/', NodeShow.as_view(), name='node-show'),
-    path('node/detail/<int:n_id>', NodeDetail.as_view(), name='node-detail'),
-    path('node/select/', SelectNode.as_view(), name='node-select')
+    path('node/', NodeView.as_view(), name='node-all'),
+    path('node/<int:n_id>/', NodeView.as_view(), name='node-per'),
+    path('node/detail/<int:n_id>/', DetailView.as_view(), name='node-detail')
 ]

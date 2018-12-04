@@ -10,26 +10,22 @@ from users.models import SSRAccount
 from apps.utils.nodemgr import NodeStatusCacheMgr
 
 
-class NodeShow(LoginRequireMixin, View):
-    """显示节点列表"""
-    def get(self, request):
-        nodes = Node.objects.all()
-        nscm = NodeStatusCacheMgr()
-        node_info = []
-        for node in nodes:
-            count = SSRAccount.objects.filter(node=node).count()
-            # stat is 'offline' or 'online'
-            stat = nscm.get_node_status(node.node_id)
-            node_info.append({'node': node, 'count': count, 'status': stat})
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView
+from node.utils.serializers import NodeSerializer
 
-        user = request.user
-        ssr = SSRAccount.objects.get(user=user)
-        curr_node = ssr.node
-        params = {
-            'curr_node': curr_node,
-            'node_info': node_info,
-        }
-        return render(request, 'backend/usage/nodelist.html', params)
+
+class NodeView(APIView):
+    def get(self, request, *args, **kwargs):
+        n_id = kwargs.get('n_id')
+        if n_id:
+            query_set = Node.objects.filter(node_id=n_id).first()
+            sers = NodeSerializer(instance=query_set, many=False, context={'request': request})
+        else:
+            query_set = Node.objects.all()
+            sers = NodeSerializer(instance=query_set, many=True, context={'request': request})
+        return Response(sers.data)
 
 
 class SelectNode(LoginRequireMixin, View):
@@ -47,25 +43,28 @@ class SelectNode(LoginRequireMixin, View):
             return JsonResponse({'res': '所选择节点已被删除'})
 
 
-class NodeDetail(LoginRequireMixin, View):
-    """显示节点详情"""
-
-    def get(self, request, n_id):
+class DetailView(APIView):
+    def get(self, request, *args, **kwargs):
+        n_id = kwargs.get('n_id')
         node = Node.objects.get(node_id=n_id)
         nscm = NodeStatusCacheMgr()
         usages = DataUsageRecord.last_30_days(node)
-        acounts = SSRAccount.objects.filter(node=node)
-        count = len(acounts)
+        accounts = SSRAccount.objects.filter(node=node)
+        code = 0
+        count = len(accounts)
         online_count = 0
-        for acount in acounts:
-            if nscm.get_port_ips(acount.port):
+        for account in accounts:
+            if nscm.get_port_ips(account.port):
                 online_count += 1
-        params = {
-            'usages': usages,
+
+        ret = {
+            'code': code,
+            'usage': usages,
             'user': {
                 'total': count,
                 'online': online_count,
-                'online_rate': 0 if count == 0 else online_count*100//count
+                'online_rate': 0 if count == 0 else online_count * 100 // count
             }
         }
-        return render(request, 'backend/usage/nodedetail.html', params)
+
+        return Response(ret)

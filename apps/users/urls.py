@@ -8,8 +8,13 @@ from .views import (Index, Login, Register, Profile, SendEmailCode, System, Acti
                     WorkOrderShow, WorkOrderAdd, WorkorderView, WorkorderDelete, BuyTime, TradeRecodeShow,
                     Tutorial)
 
+from users.utils.auth.views import ObtainJWTView, RefreshJWTView
+from .views import UserView
 
 urlpatterns = [
+    path('test/', ObtainJWTView.as_view()),
+    path('refresh/', RefreshJWTView.as_view()),
+    path('user/', UserView.as_view()),
     path('login/', Login.as_view(), name='login'),
     path('logout/', logout, {'next_page': settings.LOGOUT_REDIRECT_URL}, name="logout"),
     path('register/', Register.as_view(), name='register'),

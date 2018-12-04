@@ -46,8 +46,8 @@ class DataUsageRecord(models.Model):
             yd = data_usage[0].bytes_recv if data_usage else 0
             usage = {
                 "x": d,
-                "yu": int(yu) // 1024,
-                "yd": int(yd) // 1024,
+                "yu": int(yu) // 1024**2,
+                "yd": int(yd) // 1024**2,
             }
             usages.append(usage)
 
