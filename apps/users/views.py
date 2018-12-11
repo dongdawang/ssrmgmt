@@ -26,16 +26,67 @@ from apps.utils.tools import search_ip_belong
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from .serializers import (RegisterSerializer, UserProfileSerializer, SSRAccountSerializer,
+                          ProfilePhotoSerializer)
 
 
+class RegisterView(APIView):
+    permission_classes = ()
+    authentication_classes = ()
 
+    def post(self, request, *args, **kwargs):
+        ser = RegisterSerializer(data=request.data)
+        code = 0
+        reason = None
+        if ser.is_valid():
+            email = ser.data['username']
+            password = ser.data['password']
+            # 判断邮箱是否被注册过
+            users = UserProfile.objects.filter(email=email)
+            if users:
+                code = 1
+                reason = 'Email has been registered.'
+            else:
+                # 发送下邮箱验证码
+                res = send_active_email(email)
+                if res == "resend":
+                    code = 2
+                    reason = 'The email activation link has been sent. Please do not re-register your email.'
+                elif res == "fail":
+                    code = 3
+                    reason = 'Email activation link failed to send.'
+                else:
+                    # username和email都是unique，所以username必须随机一个避免重复
+                    user = UserProfile(username=create_code(8), email=email)
+                    user.set_password(password)  # 通过hash和加salt的方式加密
+                    user.is_active = False  # 先将用户设为未激活状态
+                    user.save()  # save操作执行写入数据库的操作，之后才算注册成功
 
-class UserView(APIView):
-    permission_classes = (IsAuthenticated,)
-    def get(self, request, *args, **kwargs):
-        print(self.authentication_classes)
-        return Response({'user': 'all'})
+                    # 创建一个默认的SSR账号
+                    ssr = SSRAccount()
+                    ssr.port = SSRAccount.available_port()
+                    ssr.passwd = "12345"
+                    ssr.user = user
+                    ssr.method = "aes-128-ctr"
+                    ssr.protocol = "auth_sha1_v4"
+                    ssr.obfs = "tls1.2_ticket_auth"
+                    ssr.compatible = True
+                    ssr.node = Node.default_node()
+                    ssr.save()
+                    # 注册之后，判断下是否注册成功
+                    user = authenticate(username=email, password=password)
+                    if user is not None:
+                        code = 0
+                        reason = "Registered successfully."
+                    else:
+                        code = 4
+                        reason = "Fail to register."
+        else:
+            code = 5
+            reason = "'username' or 'password' is invalid."
 
+        ret = {'code': code, 'reason': reason}
+        return Response(ret)
 
 
 
@@ -65,13 +116,6 @@ class Index(View):
         return render(request, 'backend/index.html', data)
 
 
-class AuthView(APIView):
-    # 如果这个类中的方法不需要认证就能够访问，就直接覆盖配置中的认证类列表
-    authentication_classes = []
-
-
-
-
 class System(LoginRequireMixin, View):
     """进入用户中心入口"""
     def get(self, request):
@@ -90,55 +134,6 @@ class System(LoginRequireMixin, View):
             }
         }
         return render(request, 'backend/system/system.html', params)
-
-
-class Register(View):
-    """用户注册视图
-    get:收到request注册请求，返回注册页面
-    post:收到request，然后解析其中的注册数据，完成注册，返回注册结果
-    """
-    def get(self, request):
-        return render(request, 'register.html', {'result': None})
-
-    def post(self, request):
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-
-        # 判断邮箱是否被注册过
-        users = UserProfile.objects.filter(email=email)
-        if users:
-            return render(request, 'register.html', {'result': '邮箱已被注册'})
-        else:
-            # 发送下邮箱验证码
-            res = send_active_email(email)
-            if res == "resend":
-                return render(request, 'register.html', {'result': '激活邮件已发送，请不要重复注册'})
-            elif res == "fail":
-                return render(request, 'register.html', {'result': '用户激活邮件发送失败'})
-            else:
-                # username和email都是unique，所以username必须随机一个避免重复
-                user = UserProfile(username=create_code(8), email=email)
-                user.set_password(password)  # 通过hash和加salt的方式加密
-                user.is_active = False  # 先将用户设为未激活状态
-                user.save()  # save操作执行写入数据库的操作，之后才算注册成功
-
-                # 创建一个默认的SSR账号
-                ssr = SSRAccount()
-                ssr.port = SSRAccount.available_port()
-                ssr.passwd = "12345"
-                ssr.user = user
-                ssr.method = "aes-128-ctr"
-                ssr.protocol = "auth_sha1_v4"
-                ssr.obfs = "tls1.2_ticket_auth"
-                ssr.compatible = True
-                ssr.node = Node.default_node()
-                ssr.save()
-            # 注册之后，判断下是否注册成功
-            user = authenticate(username=email, password=password)
-            if user is not None:
-                return render(request, 'register.html', {'result': '注册成功'})
-            else:
-                return render(request, 'register.html', {'result': '注册失败'})
 
 
 class Activate(View):
@@ -212,26 +207,6 @@ class ResetPwd(View):
             return render(request, 'resetpwd.html', {'result': '两次输入的密码不一样'})
 
 
-class Login(View):
-
-    def get(self, request):
-        return render(request, 'login.html', {})
-
-    def post(self, request):
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            if user.is_active:
-                login(request, user)
-                return redirect('/')
-            else:
-                return render(request, 'login.html', {'result': '用户未激活'})
-        else:
-            return render(request, 'login.html', {'result': '登录失败'})
-
-
 def record_modify(modify_type=None):
     """记录每次修改个人信息的装饰器"""
     def decorator(func):
@@ -248,16 +223,63 @@ def record_modify(modify_type=None):
     return decorator
 
 
-class Profile(LoginRequireMixin, View):
-    def get(self, request):
-        user = request.user
-        if user is not None:
-            return render(request, 'backend/my/profile.html', {})
-        else:
-            return render(request, 'backend/my/profile.html', {"error": '请登录后再操作'})
+class ProfileView(APIView):
+    permission_classes = (IsAuthenticated,)
 
-    def post(self, request):
-        pass
+    def get(self, request, *args, **kwargs):
+        user = request._request.user
+        ser = UserProfileSerializer(instance=user, many=False, context={'request': request})
+        return Response(ser.data)
+
+
+class SSRAccountView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        user = request._request.user
+        try:
+            ssr = SSRAccount.objects.get(user=user)
+            ser = SSRAccountSerializer(instance=ssr, many=False)
+            return Response(ser.data)
+        except SSRAccount.DoesNotExist as e:
+            return Response({})
+
+
+class OnlineIPView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        user = request._request.user
+        ssr_account = SSRAccount.objects.get(user=user)
+        nscm = NodeStatusCacheMgr()
+        ip_info = {}
+        ips = nscm.get_port_ips(ssr_account.port)
+        # 查询ip归属地
+        for ip in ips:
+            ip_info.setdefault(ip, search_ip_belong(ip))
+        return Response(ip_info)
+
+
+class DataUsageView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        ssr_account = SSRAccount.objects.get(user=user)
+        usages = DataUsageRecord.last_30_days(ssr_account)
+        return Response(usages)
+
+
+class ProfilePhotoView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        ser = ProfilePhotoSerializer(instance=user, many=False, context={'request': request})
+        if ser.is_valid():
+            ser.save()
+            return Response({'code': 0, 'reason': 'success'})
+        return Response({'code': 1, 'reason': 'invalid'})
 
 
 class AccountEdit(LoginRequireMixin, View):
@@ -388,16 +410,6 @@ class AccountEmailModify(LoginRequireMixin, View):
             return JsonResponse({"res": "邮箱修改成功"})
         else:
             return JsonResponse({"res": "邮箱修改失败, 验证码不正确"})
-
-
-class ProfileShow(LoginRequireMixin, View):
-    """显示用户属性"""
-    def get(self, request):
-        user = request.user
-        params = {
-            'level': user.user_level(),
-        }
-        return render(request, 'backend/my/profile.html', params)
 
 
 class ProfileCenter(LoginRequireMixin, View):

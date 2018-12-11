@@ -57,7 +57,7 @@ STATICFILES_DIRS = [
 ]
 
 # 账户激活域名
-USER_DOMAIN = "localhost:8080"
+USER_DOMAIN = "localhost:8000"
 
 # API相关
 API_USERNAME = get_env_variable('SSRMGMT_API_USERNAME')

@@ -48,6 +48,8 @@ class JWTSerializer(Serializer):
         }
 
         if all(credentials.values()):
+            # cu = CustomBackend()
+            # user = cu.authenticate(**credentials)
             user = authenticate(**credentials)
 
             if user:

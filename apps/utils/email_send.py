@@ -55,7 +55,7 @@ def send_type_email(email, send_type='register'):
 def send_active_email(email):
     verify_code = create_code(4)
     key = email
-    link = settings.USER_DOMAIN + r"/users/activate" + "?email={}&code={}".format(email, verify_code)
+    link = settings.USER_DOMAIN + r"/activate" + "?email={}&code={}".format(email, verify_code)
     if key in cache:
         return "resend"
     else:

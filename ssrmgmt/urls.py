@@ -19,12 +19,13 @@ from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
 
-from users.views import Index
+from users.views import Index, Activate
 # from ssrmgmt.settings import MEDIA_ROOT
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('activate/', Activate.as_view()),
     path('api/<str:version>/', include(('users.urls', 'users'), namespace='users')),
     path('api/<str:version>/', include(('API.urls', 'API'), namespace='api')),
     path('api/<str:version>/', include(('node.urls', 'node'), namespace='node')),

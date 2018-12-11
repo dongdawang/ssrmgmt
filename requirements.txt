@@ -1,7 +1,9 @@
 amqp==2.3.2
 billiard==3.5.0.4
 Django==2.0.6
+django-cors-headers==2.4.0
 django-redis==4.9.0
+djangorestframework==3.9.0
 dukpy==0.2.0
 eventlet==0.23.0
 future==0.16.0

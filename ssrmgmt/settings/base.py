@@ -18,6 +18,7 @@ import logging
 from django.core.exceptions import ImproperlyConfigured
 
 from .restful import *
+from .cors import *
 
 
 def get_env_variable(var_name):
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
     'API',
     'node',
     'rest_framework',
+    'corsheaders',
 ]
 
 AUTH_USER_MODEL = 'users.UserProfile'
@@ -64,6 +66,7 @@ AUTHENTICATION_BACKENDS = {
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
